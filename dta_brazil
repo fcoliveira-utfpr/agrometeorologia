@@ -1,4 +1,4 @@
-Código,Município,UF,CAD ou AWC (m³/m³),DTA (mm/m)
+IBGE-Code,Município,UF,CAD ou AWC (m³/m³),DTA (mm/m)
 1100015,Alta Floresta D'Oeste,RO,"0,110","110,3"
 1100023,Ariquemes,RO,"0,109","109,1"
 1100031,Cabixi,RO,"0,118","118,4"
@@ -5568,4 +5568,5 @@ Código,Município,UF,CAD ou AWC (m³/m³),DTA (mm/m)
 5222054,Vicentinópolis,GO,"0,133","133,0"
 5222203,Vila Boa,GO,"0,143","143,3"
 5222302,Vila Propício,GO,"0,127","126,5"
+
 5300108,Brasília,DF,"0,112","112,1"
