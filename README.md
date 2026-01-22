@@ -36,6 +36,9 @@ Ao final do uso destes notebooks, o estudante será capaz de:
 #### `dados_nasapower.ipynb`
 [👉 Abrir no Colab](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/dados_nasapower.ipynb)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]
+(https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/dados_nasapower.ipynb)
+
 **Objetivo:**  
 Obter dados meteorológicos da base **NASA/POWER** para localidades específicas.
 
