@@ -47,15 +47,16 @@ Obter dados meteorológicos da base **NASA/POWER** por Município.
 
 ### 🔹 2. Caracterização climática e climogramas
 
-#### `climogramas_br.ipynb`
+#### `02_climogramas_br.ipynb`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/02_climogramas_br.ipynb)
+
 **Objetivo:**  
 Analisar o regime climático e construir **climogramas**.
 
 **Conteúdos abordados:**
-- Precipitação mensal  
-- Temperatura média mensal  
-- Construção e interpretação de climogramas  
-- Aplicação na caracterização climática regional  
+- Constroi gráfico climograma (temperatura média mensal e precipitação acumulada mensal
+- Gera tabela com Tmed e chuva mensal - dados do [Alvaes et al. (2013)](https://www.schweizerbart.de/papers/metz/detail/22/82078/Koppen_s_climate_classification_map_for_Brazil?af=crossref) 
 
 ---
 
