@@ -33,18 +33,15 @@ Ao final do uso destes notebooks, o estudante será capaz de:
 
 ### 🔹 1. Dados climáticos
 
-#### `dados_nasapower.ipynb`
-[👉 Abrir no Colab](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/dados_nasapower.ipynb)
+#### `01_dados_nasapower.ipynb`
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/dados_nasapower.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/01_dados_nasapower.ipynb)
 
 **Objetivo:**  
-Obter dados meteorológicos da base **NASA/POWER** para localidades específicas.
+Obter dados meteorológicos da base **NASA/POWER** por Município.
 
 **Conteúdos abordados:**
-- Extração de dados climáticos  
-- Organização em DataFrame  
-- Variáveis meteorológicas aplicadas à agrometeorologia  
+- Baixa dados meteorológicos do NASA/POWER em escala diária, mensal e de uma Normal Climatológica
 
 ---
 
