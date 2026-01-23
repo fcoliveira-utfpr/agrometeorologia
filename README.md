@@ -62,14 +62,19 @@ Analisar o regime climático e construir **climogramas**.
 
 ### 🔹 3. Informações de solo e clima
 
-#### `infos_clima_solo.ipynb`
+#### `03_infos_clima_solo.ipynb`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/03_infos_clima_solo.ipynb)
+
 **Objetivo:**  
 Integrar informações climáticas e propriedades do solo relevantes ao manejo agrícola.
 
 **Conteúdos abordados:**
-- Parâmetros físicos do solo  
-- Relação solo–água–clima  
-- Conceitos aplicados ao balanço hídrico  
+- Gera Tabela de informações do município: **Altitude (m)**,	**DTA (mm/m)**,	**clima KöppenGeiger**,	**latitude e longitude** do centroide do município
+- Permite visualizar por Estado no mapa: município, latitude, longitude
+- Permite visualizar por Estado no mapa: município, DTA
+- Permite visualizar por Estado no mapa: município, clima Koppen-Geiger
+- Município e estado pela latitude e longitude
 
 ---
 
