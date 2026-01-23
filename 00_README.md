@@ -136,6 +136,19 @@ Calcular e analisar o **balanço hídrico agrícola** integrando clima, solo e c
 - calcula o ISNA para cada fase da cultura 
 
 ---
+---
+### 🔹 EXTRA. baixar dados de SANTA HELENA
+
+#### `GAMBITEC_DADOS_SH.ipynb`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/GAMBITEC_DADOS_SH.ipynb)
+
+**Objetivo:**  
+Baixar dados meteorológicos para Santa Helena - PR.
+
+**Conteúdos abordados:**
+- Baixa dados do SIMEPAR para Santa Helena - PR
+
 **👨‍🏫 Autor**
 
 Prof. Fabrício Correia de Oliveira [Currículo Lattes](http://lattes.cnpq.br/9528194038713972)
