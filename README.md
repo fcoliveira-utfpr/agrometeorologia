@@ -112,26 +112,35 @@ Organizar parâmetros fenológicos e fisiológicos das culturas agrícolas.
 
 ---
 
-### 🔹 5. Balanço hídrico da cultura
+### 🔹 5. Balanço climatológico
 
-#### `bh_cultura.ipynb`
+#### `05_bh_climatologico.ipynb`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/05_bh_climatologico.ipynb)
+
+**Objetivo:**  
+Calcular e analisar o **balanço hídrico climatológico** integrando clima e solo.
+
+**Conteúdos abordados:**
+- Baixa dados do NASA/POWER
+- Calcula evapotranspiração mensal por Hargreaves-Samani
+- Calcula o balanço hídrico climatológico de Thothwaite-Mather em escala mensal
+ 
+---
+### 🔹 6. Balanço hídrico da cultura
+
+#### `06_bh_cultura.ipynb`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/06_bh_cultura.ipynb)
+
 **Objetivo:**  
 Calcular e analisar o **balanço hídrico agrícola** integrando clima, solo e cultura.
 
 **Conteúdos abordados:**
-- Evapotranspiração  
-- Armazenamento de água no solo  
-- Déficit e excedente hídrico  
-- Interpretação para planejamento agrícola  
+- Para cada município, cultura, ano e data de semeadura, calcula o balanço hídrico de cultura
+- calcula o ISNA diário para o ciclo da cultura
+- calcula o ISNA para cada fase da cultura 
 
 ---
 
-## 🧭 Ordem recomendada de execução
-
-```text
-1 → dados_nasapower.ipynb  
-2 → climogramas_br.ipynb  
-3 → infos_clima_solo.ipynb  
-4 → infos_cultura.ipynb  
-5 → bh_cultura.ipynb  
 
