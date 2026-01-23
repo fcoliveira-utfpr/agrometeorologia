@@ -19,6 +19,7 @@ Ao final da disciplina, discentes do terceiro período são capazes de avaliar o
 3. Execute as células **na ordem**  
 4. Leia atentamente os textos explicativos (Markdown) e comentários no código
 5. Para baixar arquivos retire o # e execute o bloco de código
+6. Os arquivos com final .csv são dados brutos, não precisar ser abertos
 
 ---
 
@@ -136,5 +137,7 @@ Calcular e analisar o **balanço hídrico agrícola** integrando clima, solo e c
 
 ---
 **👨‍🏫 Autor**
+
 Prof. Fabrício Correia de Oliveira [Currículo Lattes](http://lattes.cnpq.br/9528194038713972)
+
 Universidade Tecnológica Federal do Paraná (UTFPR)
