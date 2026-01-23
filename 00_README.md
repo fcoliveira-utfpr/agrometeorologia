@@ -1,6 +1,6 @@
 # 🌱 Agrometeorologia Aplicada com Python
 
-Este repositório reúne notebooks didáticos utilizados na disciplina de **Agrometeorologia**, com foco na análise de dados climáticos, caracterização clima–solo–cultura e aplicação em balanço hídrico agrícola, utilizando **Python no Google Colab**.
+Este repositório reúne notebooks didáticos utilizados na disciplina de **Agrometeorologia**, com foco na análise de dados climáticos, caracterização clima–solo–cultura e aplicação em balanço hídrico agrícola, utilizando **Python no Google Colab** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/exemplo_notebook.ipynb)
 
 Os notebooks foram desenvolvidos com abordagem prática, utilizando dados reais e exemplos aplicados à agricultura brasileira.
 
@@ -8,13 +8,7 @@ Os notebooks foram desenvolvidos com abordagem prática, utilizando dados reais 
 
 ## 🎯 Objetivos da disciplina
 
-Ao final do uso destes notebooks, o estudante será capaz de:
-
-- Obter e organizar dados meteorológicos de bases públicas  
-- Analisar variáveis climáticas aplicadas à agricultura  
-- Construir climogramas  
-- Integrar informações de clima, solo e cultura  
-- Calcular e interpretar o balanço hídrico agrícola  
+Ao final da disciplina, discentes do terceiro período são capazes de avaliar o efeito de elementos climáticos e meteorológicos sobre o planejamento de uso da terra e das operações agrícolas e pecuárias, relacionando informações de tempo e clima com os sistemas de produção agropecuário, com decisões sustentáveis e inovadoras. 
 
 ---
 
@@ -23,9 +17,8 @@ Ao final do uso destes notebooks, o estudante será capaz de:
 1. Abra o notebook desejado diretamente no GitHub  
 2. Clique em **“Open in Colab”**  
 3. Execute as células **na ordem**  
-4. Leia atentamente os textos explicativos (Markdown) e comentários no código  
-
-> 📌 Recomenda-se seguir a **ordem sugerida** dos notebooks.
+4. Leia atentamente os textos explicativos (Markdown) e comentários no código
+5. Para baixar arquivos retire o # e execute o bloco de código
 
 ---
 
@@ -142,5 +135,6 @@ Calcular e analisar o **balanço hídrico agrícola** integrando clima, solo e c
 - calcula o ISNA para cada fase da cultura 
 
 ---
-
-
+**👨‍🏫 Autor**
+Prof. Fabrício Correia de Oliveira [Currículo Lattes](http://lattes.cnpq.br/9528194038713972)
+Universidade Tecnológica Federal do Paraná (UTFPR)
