@@ -38,7 +38,7 @@ Ao final do uso destes notebooks, o estudante será capaz de:
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/01_dados_nasapower.ipynb)
 
 **Objetivo:**  
-Obter dados meteorológicos da base **NASA/POWER** por Município.
+Obter dados meteorológicos da base [**NASA/POWER**](https://power.larc.nasa.gov/) por Município.
 
 **Conteúdos abordados:**
 - Baixa dados meteorológicos do NASA/POWER em escala diária, mensal e de uma Normal Climatológica
@@ -72,7 +72,7 @@ Integrar informações climáticas e propriedades do solo relevantes ao manejo a
 **Conteúdos abordados:**
 - Gera Tabela de informações do município: **Altitude (m)**,	**DTA (mm/m)**,	**clima KöppenGeiger**,	**latitude e longitude** do centroide do município
 - Permite visualizar por Estado no mapa: município, latitude, longitude
-- Permite visualizar por Estado no mapa: município, DTA
+- Permite visualizar por Estado no mapa: município, DTA [Atlas Irrigação, 2021](https://metadados.snirh.gov.br/geonetwork/srv/api/records/1b19cbb4-10fa-4be4-96db-b3dcd8975db0)
 - Permite visualizar por Estado no mapa: município, clima Koppen-Geiger
 - Município e estado pela latitude e longitude
 
@@ -80,15 +80,35 @@ Integrar informações climáticas e propriedades do solo relevantes ao manejo a
 
 ### 🔹 4. Informações de cultura agrícola
 
-#### `infos_cultura.ipynb`
+#### `04_infos_cultura.ipynb`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/04_infos_cultura.ipynb)
+
 **Objetivo:**  
 Organizar parâmetros fenológicos e fisiológicos das culturas agrícolas.
 
 **Conteúdos abordados:**
-- Profundidade efetiva do sistema radicular  
-- Coeficientes de cultura (Kc)  
-- Duração das fases fenológicas  
-- Aplicação em estudos agrometeorológicos  
+- *São obtidos os seguintes dados das culturas* [Allen et al. (1998)](https://www.fao.org/4/x0490e/x0490e00.htm):
+- **F1 (%)** – Fase inicial do ciclo da cultura  
+- **F2 (%)** – Fase de desenvolvimento da cultura  
+- **F3 (%)** – Fase média (máximo desenvolvimento) da cultura  
+- **F4 (%)** – Fase final (maturação/senescência) da cultura  
+
+- **f** – Fator de depleção da água disponível no solo  
+
+- **Kc ini** – Coeficiente de cultura na fase inicial  
+- **Kc méd** – Coeficiente de cultura na fase média  
+- **Kc fin** – Coeficiente de cultura na fase final  
+
+- **Z efetivo (m)** – Profundidade efetiva do sistema radicular  
+
+- **Ky₁** – Fator de resposta da cultura ao déficit hídrico na fase 1  
+- **Ky₂** – Fator de resposta da cultura ao déficit hídrico na fase 2  
+- **Ky₃** – Fator de resposta da cultura ao déficit hídrico na fase 3  
+- **Ky₄** – Fator de resposta da cultura ao déficit hídrico na fase 4  
+
+- **Ky total** – Fator de resposta global da cultura ao déficit hídrico  
+
 
 ---
 
