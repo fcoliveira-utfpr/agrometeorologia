@@ -116,8 +116,7 @@ Organizar parâmetros fenológicos e fisiológicos das culturas agrícolas.
 Calcular e analisar o **balanço hídrico climatológico** integrando clima e solo.
 
 **Conteúdos abordados:**
-- Baixa dados do NASA/POWER
-- Calcula evapotranspiração mensal por Hargreaves-Samani
+- Baixa dados da Normal Climatológicao do TerraClimate (1991-2020)
 - Calcula o balanço hídrico climatológico de Thothwaite-Mather em escala mensal
  
 ---
