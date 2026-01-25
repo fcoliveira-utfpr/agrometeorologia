@@ -35,6 +35,7 @@ Ao final da disciplina, discentes do terceiro período são capazes de avaliar o
 Obter dados meteorológicos da base [**NASA/POWER**](https://power.larc.nasa.gov/) por Município.
 
 **Conteúdos abordados:**
+- Permite visualizar todos os ESTADOS e MUNICÍPIOS
 - Baixa dados meteorológicos do NASA/POWER em escala diária, mensal e de uma Normal Climatológica
 
 ---
@@ -49,8 +50,11 @@ Obter dados meteorológicos da base [**NASA/POWER**](https://power.larc.nasa.gov
 Analisar o regime climático e construir **climogramas**.
 
 **Conteúdos abordados:**
-- Constroi gráfico climograma (temperatura média mensal e precipitação acumulada mensal
-- Gera tabela com Tmed e chuva mensal - dados do [Alvaes et al. (2013)](https://www.schweizerbart.de/papers/metz/detail/22/82078/Koppen_s_climate_classification_map_for_Brazil?af=crossref) 
+- Permite visualizar todos os ESTADOS e MUNICÍPIOS
+- Gera tabela com Tmed - dados do [Alvaes et al. (2013)](https://www.schweizerbart.de/papers/metz/detail/22/82078/Koppen_s_climate_classification_map_for_Brazil?af=crossref) e chuva mensal - dados do TerraClimate
+- Constroi gráfico climograma (temperatura média mensal e precipitação acumulada mensal) - Analises temporal
+- Constroi mapa da chuva por estado - Analises espacial de dados anuais
+- Constroi mapa da temperatura por estado - Analises espacial de dados anuais
 
 ---
 
@@ -83,6 +87,7 @@ Integrar informações climáticas e propriedades do solo relevantes ao manejo a
 Organizar parâmetros fenológicos e fisiológicos das culturas agrícolas.
 
 **Conteúdos abordados:**
+- Permite visualizar todas as CULTURAS do banco de dados
 - *São obtidos os seguintes dados das culturas* [Allen et al. (1998)](https://www.fao.org/4/x0490e/x0490e00.htm):
 - **F1 (%)** – Fase inicial do ciclo da cultura  
 - **F2 (%)** – Fase de desenvolvimento da cultura  
@@ -117,8 +122,13 @@ Organizar parâmetros fenológicos e fisiológicos das culturas agrícolas.
 Calcular e analisar o **balanço hídrico climatológico** integrando clima e solo.
 
 **Conteúdos abordados:**
+- Permite visualizar todos os ESTADOS e MUNICÍPIOS
 - Baixa dados da Normal Climatológicao do TerraClimate (1991-2020)
 - Calcula o balanço hídrico climatológico de Thothwaite-Mather em escala mensal
+- Constroi gráfico do Extrato do Balanço Hídrico
+- Constroi gráfico de Água no solo
+- Constroi gráfico de Retiradas e reposições de água
+- Constroi gráfico do Balanço hídrico
  
 ---
 ### 🔹 6. Balanço hídrico da cultura
@@ -131,13 +141,14 @@ Calcular e analisar o **balanço hídrico climatológico** integrando clima e so
 Calcular e analisar o **balanço hídrico agrícola** integrando clima, solo e cultura.
 
 **Conteúdos abordados:**
+- Permite visualizar todos os ESTADOS e MUNICÍPIOS
 - Para cada município, cultura, ano e data de semeadura, calcula o balanço hídrico de cultura
 - calcula o ISNA diário para o ciclo da cultura
 - calcula o ISNA para cada fase da cultura 
 
 ---
 ---
-### 🔹 EXTRA. baixar dados de SANTA HELENA
+### 🔹 EXTRA. baixar dados de SANTA HELENA - PR
 
 #### `GAMBITEC_DADOS_SH.ipynb`
 
@@ -151,6 +162,8 @@ Baixar dados meteorológicos para Santa Helena - PR.
 
 **👨‍🏫 Autor**
 
-Prof. Fabrício Correia de Oliveira [Currículo Lattes](http://lattes.cnpq.br/9528194038713972)
+Prof. Fabrício Correia de Oliveira 
+
+[Currículo Lattes](http://lattes.cnpq.br/9528194038713972)
 
 Universidade Tecnológica Federal do Paraná (UTFPR)
