@@ -64,6 +64,7 @@ Analisar o regime climático e construir **climogramas**.
 Integrar informações climáticas e propriedades do solo relevantes ao manejo agrícola.
 
 **Conteúdos abordados:**
+- Permite visualizar todos os ESTADOS e MUNICÍPIOS
 - Gera Tabela de informações do município: **Altitude (m)**,	**DTA (mm/m)**,	**clima KöppenGeiger**,	**latitude e longitude** do centroide do município
 - Permite visualizar por Estado no mapa: município, latitude, longitude
 - Permite visualizar por Estado no mapa: município, DTA [Atlas Irrigação, 2021](https://metadados.snirh.gov.br/geonetwork/srv/api/records/1b19cbb4-10fa-4be4-96db-b3dcd8975db0)
