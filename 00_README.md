@@ -164,6 +164,6 @@ Baixar dados meteorológicos para Santa Helena - PR.
 
 Prof. Fabrício Correia de Oliveira 
 
-[Currículo Lattes](http://lattes.cnpq.br/9528194038713972)
-
 Universidade Tecnológica Federal do Paraná (UTFPR)
+
+[Currículo Lattes](http://lattes.cnpq.br/9528194038713972)
