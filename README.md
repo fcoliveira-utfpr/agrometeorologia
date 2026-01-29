@@ -74,6 +74,7 @@ Integrar informações climáticas e propriedades do solo relevantes ao manejo a
 - Permite visualizar por Estado no mapa: município, DTA [Atlas Irrigação, 2021](https://metadados.snirh.gov.br/geonetwork/srv/api/records/1b19cbb4-10fa-4be4-96db-b3dcd8975db0)
 - Permite visualizar por Estado no mapa: município, clima Koppen-Geiger
 - Município e estado pela latitude e longitude
+- Informações do solo pela lat e lon
 
 ---
 
