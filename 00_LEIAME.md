@@ -55,6 +55,7 @@ Analisar o regime climático e construir **climogramas**.
 - Constroi gráfico climograma (temperatura média mensal e precipitação acumulada mensal) - Analises temporal
 - Constroi mapa da chuva por estado - Analises espacial de dados anuais
 - Constroi mapa da temperatura por estado - Analises espacial de dados anuais
+- Constroi mapa de Classificação Climática de Koppen-Geiger
 
 ---
 
