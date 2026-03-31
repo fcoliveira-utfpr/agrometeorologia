@@ -5,6 +5,10 @@ Este repositório reúne notebooks didáticos utilizados na disciplina de **Agro
 Os notebooks foram desenvolvidos com abordagem prática, utilizando dados reais e exemplos aplicados à agricultura brasileira.
 
 ---
+CITAÇÃO
+[![DOI](https://zenodo.org/badge/1137750656.svg)](https://doi.org/10.5281/zenodo.19342886)
+
+---
 
 ## 🎯 Objetivos da disciplina
 
