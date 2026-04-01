@@ -12,7 +12,7 @@ Como citar?
 <p style="font-size: 12px;">
 OLIVEIRA, Fabricio Correia de. Agrometeorologia: v. 1.0. Zenodo, 2026. DOI: 10.5281/zenodo.1934288. Disponível em: https://doi.org/10.5281/zenodo.1934288. Acesso em: 30 mar. 2026.
 </p>
----
+
 
 ## 🎯 Objetivos da disciplina
 
