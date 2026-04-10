@@ -16,7 +16,7 @@ OLIVEIRA, Fabricio Correia de. Agrometeorologia: v. 1.0. Zenodo, 2026. DOI: 10.5
 
 ## 🎯 Objetivos da disciplina
 
-Ao final da disciplina, discentes do terceiro período são capazes de avaliar o efeito de elementos climáticos e meteorológicos sobre o planejamento de uso da terra e das operações agrícolas e pecuárias, relacionando informações de tempo e clima com os sistemas de produção agropecuário, com decisões sustentáveis e inovadoras. 
+Ao final da disciplina, discentes do terceiro período são capazes de avaliar o efeito de elementos climáticos e meteorológicos sobre o planejamento de uso da terra e das operações agrícolas e pecuárias, relacionando informações de tempo e clima com os sistemas de produção agropecuária, com decisões sustentáveis e inovadoras. 
 
 ---
 
@@ -40,7 +40,7 @@ Ao final da disciplina, discentes do terceiro período são capazes de avaliar o
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/01_dados_nasapower.ipynb)
 
 **Objetivo:**  
-Obter dados meteorológicos da base [**NASA/POWER**](https://power.larc.nasa.gov/) por Município.
+Obter dados meteorológicos da base [**NASA/POWER**](https://power.larc.nasa.gov/) por município.
 
 **Conteúdos abordados:**
 - Permite visualizar todos os ESTADOS e MUNICÍPIOS
@@ -59,11 +59,11 @@ Analisar o regime climático e construir **climogramas**.
 
 **Conteúdos abordados:**
 - Permite visualizar todos os ESTADOS e MUNICÍPIOS
-- Gera tabela com Tmed - dados do [Alvaes et al. (2013)](https://www.schweizerbart.de/papers/metz/detail/22/82078/Koppen_s_climate_classification_map_for_Brazil?af=crossref) e chuva mensal - dados do TerraClimate
-- Constroi gráfico climograma (temperatura média mensal e precipitação acumulada mensal) - Analises temporal
-- Constroi mapa da chuva por estado - Analises espacial de dados anuais
-- Constroi mapa da temperatura por estado - Analises espacial de dados anuais
-- Constroi mapa de Classificação Climática de Koppen-Geiger
+- Gera tabela com Tmed - dados do [Alvares et al. (2013)](https://www.schweizerbart.de/papers/metz/detail/22/82078/Koppen_s_climate_classification_map_for_Brazil?af=crossref) e chuva mensal - dados do TerraClimate
+- Constrói gráfico climograma (temperatura média mensal e precipitação acumulada mensal) - Análises temporal
+- Constrói mapa da chuva por estado - Análises espacial de dados anuais
+- Constrói mapa da temperatura por estado - Análises espacial de dados anuais
+- Constrói mapa de Classificação Climática de Köppen-Geiger
 
 ---
 
@@ -81,7 +81,7 @@ Integrar informações climáticas e propriedades do solo relevantes ao manejo a
 - Gera Tabela de informações do município: **Altitude (m)**,	**DTA (mm/m)**,	**clima KöppenGeiger**,	**latitude e longitude** do centroide do município
 - Permite visualizar por Estado no mapa: município, latitude, longitude
 - Permite visualizar por Estado no mapa: município, DTA [Atlas Irrigação, 2021](https://metadados.snirh.gov.br/geonetwork/srv/api/records/1b19cbb4-10fa-4be4-96db-b3dcd8975db0)
-- Permite visualizar por Estado no mapa: município, clima Koppen-Geiger
+- Permite visualizar por Estado no mapa: município, clima Köppen-Geiger
 - Município e estado pela latitude e longitude
 - Informações do solo pela lat e lon
 
@@ -133,12 +133,12 @@ Calcular e analisar o **balanço hídrico climatológico** integrando clima e so
 
 **Conteúdos abordados:**
 - Permite visualizar todos os ESTADOS e MUNICÍPIOS
-- Baixa dados da Normal Climatológicao do TerraClimate (1991-2020)
+- Baixa dados da Normal Climatológica do TerraClimate (1991-2020)
 - Calcula o balanço hídrico climatológico de Thothwaite-Mather em escala mensal
-- Constroi gráfico do Extrato do Balanço Hídrico
-- Constroi gráfico de Água no solo
-- Constroi gráfico de Retiradas e reposições de água
-- Constroi gráfico do Balanço hídrico
+- Constrói gráfico do Extrato do Balanço Hídrico
+- Constrói gráfico de água no solo
+- Constrói gráfico de retiradas e reposições de água
+- Constrói gráfico do balanço hídrico
  
 ---
 ### 🔹 6. Balanço hídrico da cultura
