@@ -63,7 +63,7 @@
                     <h3 class="font-bold mb-4 flex items-center gap-2 text-slate-800">
                         <i data-lucide="calendar" class="w-5 h-5"></i> Filtro de Período
                     </h3>
-                    <div class="space-y-5">
+                    <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data Inicial</label>
                             <input type="date" id="date-start" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
@@ -72,9 +72,16 @@
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data Final</label>
                             <input type="date" id="date-end" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
                         </div>
-                        <button id="btn-process" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95">
-                            <i data-lucide="filter" class="w-4 h-4"></i> Filtrar Agora
-                        </button>
+                        
+                        <div class="pt-2 space-y-3">
+                            <button id="btn-process" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
+                                <i data-lucide="filter" class="w-4 h-4"></i> Filtrar Agora
+                            </button>
+                            
+                            <button id="btn-download" class="w-full bg-white hover:bg-slate-50 text-emerald-700 border-2 border-emerald-600 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95">
+                                <i data-lucide="download" class="w-4 h-4"></i> Exportar CSV
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -131,13 +138,13 @@
                     <thead class="bg-white text-slate-400 uppercase font-black border-b">
                         <tr>
                             <th class="px-6 py-4">Data</th>
-                            <th class="px-6 py-4">T. Máx</th>
-                            <th class="px-6 py-4">T. Mín</th>
-                            <th class="px-6 py-4">T. Méd</th>
+                            <th class="px-6 py-4">T. Máx (°C)</th>
+                            <th class="px-6 py-4">T. Mín (°C)</th>
+                            <th class="px-6 py-4">T. Méd (°C)</th>
                             <th class="px-6 py-4">UR (%)</th>
-                            <th class="px-6 py-4">Vento</th>
-                            <th class="px-6 py-4">Radiação</th>
-                            <th class="px-6 py-4">Chuva</th>
+                            <th class="px-6 py-4">Vento (m/s)</th>
+                            <th class="px-6 py-4">Radiação (MJ)</th>
+                            <th class="px-6 py-4">Chuva (mm)</th>
                         </tr>
                     </thead>
                     <tbody id="data-table-body" class="divide-y divide-slate-100 font-medium text-slate-600">
@@ -155,10 +162,8 @@
 
         function initIcons() { if (typeof lucide !== 'undefined') lucide.createIcons(); }
 
-        // Função de tratamento para números do SIMEPAR (aspas e vírgulas)
         function parsePTBRFloat(val) {
             if (val === undefined || val === null) return 0;
-            // Remove aspas duplas, espaços e troca vírgula por ponto
             const clean = val.toString().replace(/"/g, '').replace(/\s/g, '').replace(',', '.');
             const num = parseFloat(clean);
             return isNaN(num) ? 0 : num;
@@ -176,7 +181,6 @@
         }
 
         function mapRow(row) {
-            // Busca flexível de colunas para suportar variações no CSV
             const findVal = (terms) => {
                 const key = Object.keys(row).find(k => 
                     terms.some(t => k.toLowerCase().includes(t.toLowerCase()))
@@ -250,6 +254,40 @@
             updateCharts();
         }
 
+        function downloadCSV() {
+            if (filteredData.length === 0) {
+                alert("Não há dados para exportar no período selecionado.");
+                return;
+            }
+
+            // Cabeçalho do CSV
+            const header = ["Data", "Tmax (C)", "Tmin (C)", "Tmed (C)", "UR (%)", "Vento (m/s)", "Radiacao (MJ)", "Chuva (mm)"];
+            
+            // Converte os dados para o formato PT-BR (vírgula decimal e ponto e vírgula como separador de colunas)
+            const rows = filteredData.map(d => [
+                d.dateStr,
+                d.tmax.toString().replace('.', ','),
+                d.tmin.toString().replace('.', ','),
+                d.tmed.toString().replace('.', ','),
+                d.umid.toString().replace('.', ','),
+                d.vento.toString().replace('.', ','),
+                d.rad.toString().replace('.', ','),
+                d.precip.toString().replace('.', ',')
+            ].join(';'));
+
+            const csvContent = "\uFEFF" + [header.join(';'), ...rows].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            const fileName = `GAMBITEC_SH_${document.getElementById('date-start').value}_a_${document.getElementById('date-end').value}.csv`;
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         function updateUI() {
             const tbody = document.getElementById('data-table-body');
             
@@ -318,6 +356,7 @@
         }
 
         document.getElementById('btn-process').addEventListener('click', processData);
+        document.getElementById('btn-download').addEventListener('click', downloadCSV);
         window.onload = () => { initIcons(); loadData(); };
     </script>
 </body>
