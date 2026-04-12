@@ -188,10 +188,10 @@ Baixar dados meteorológicos para Santa Helena - PR.
 
 - [Atlas Irrigação, 2021](https://metadados.snirh.gov.br/geonetwork/srv/api/records/1b19cbb4-10fa-4be4-96db-b3dcd8975db0)
 - [Alvares et al. (2013)](https://www.schweizerbart.de/papers/metz/detail/22/82078/Koppen_s_climate_classification_map_for_Brazil?af=crossref)
-- [**NASA/POWER**](https://power.larc.nasa.gov/)
-- [**INMET**]([https://power.larc.nasa.gov/](https://portal.inmet.gov.br/))
-- [**NSIMEPAR via INMET**]([https://power.larc.nasa.gov/](https://www.simepar.br/))
-- [**IAT**]([https://power.larc.nasa.gov/](https://www.iat.pr.gov.br/))
+- [NASA/POWER](https://power.larc.nasa.gov/)
+- [INMET](https://portal.inmet.gov.br/)
+- [SIMEPAR](https://www.simepar.br/)
+- [IAT](https://www.iat.pr.gov.br/)
 
 
 **👨‍🏫 Autor**
