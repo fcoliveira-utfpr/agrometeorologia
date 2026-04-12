@@ -5,7 +5,11 @@ Este repositório reúne notebooks didáticos utilizados na área de **Agrometeo
 Os notebooks foram desenvolvidos com abordagem prática, utilizando dados reais e exemplos aplicados à agricultura brasileira.
 
 ---
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19342886.svg)](https://doi.org/10.5281/zenodo.19342886)
+<p align="center">
+  <a href="https://doi.org/10.5281/zenodo.19342886">
+    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.19342886.svg" alt="DOI">
+  </a>
+</p>
 
 Como citar?
 ---
