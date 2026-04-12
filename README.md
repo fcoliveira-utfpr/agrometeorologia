@@ -157,6 +157,18 @@ Calcular e analisar o **balanço hídrico agrícola** integrando clima, solo e c
 - calcula o ISNA para cada fase da cultura 
 
 ---
+### 🔹 7. NoteBook para gráficos gerais
+
+#### `07_graficos_gerais.ipynb`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/06_bh_cultura.ipynb)
+
+**Objetivo:**  
+Construção de gráficos gerais, barra, linhas, heatmap, boxplot.
+
+**Conteúdos abordados:**
+- Construir gráficos
+---
 ---
 ### 🔹 EXTRA 1. baixar dados de SANTA HELENA - PR
 
@@ -170,18 +182,6 @@ Baixar dados meteorológicos para Santa Helena - PR.
 **Conteúdos abordados:**
 - Baixa dados do SIMEPAR para Santa Helena - PR
 
----
-### 🔹 EXTRA 2. NoteBook para gráficos gerais
-
-#### `06_bh_cultura.ipynb`
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/06_bh_cultura.ipynb)
-
-**Objetivo:**  
-Construção de gráficos gerais, barra, linhas, heatmap, boxplot.
-
-**Conteúdos abordados:**
-- Construir gráficos 
 
 **👨‍🏫 Autor**
 
