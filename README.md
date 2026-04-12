@@ -4,7 +4,7 @@ Este repositório reúne notebooks didáticos utilizados na área de **Agrometeo
 
 Os notebooks foram desenvolvidos com abordagem prática, utilizando dados reais e exemplos aplicados à agricultura brasileira.
 ---
-Apresentação: ["Manipulação e visualização inteligente de dados meteorológicos"]([https://portal.inmet.gov.br/](https://docs.google.com/presentation/d/1WEEhoKqe4tz6hYs61jR8Msn0t49pVcof72aSf2N6urk/preview?slide=id.p1)
+Apresentação: [Manipulação e visualização inteligente de dados meteorológicos](https://docs.google.com/presentation/d/1WEEhoKqe4tz6hYs61jR8Msn0t49pVcof72aSf2N6urk/preview?slide=id.p1)
 ---
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19342886.svg)](https://doi.org/10.5281/zenodo.19342886)
 
