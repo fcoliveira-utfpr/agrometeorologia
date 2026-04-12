@@ -1,6 +1,6 @@
 # 🌱 Agrometeorologia Aplicada com Python
 
-Este repositório reúne notebooks didáticos utilizados na disciplina de **Agrometeorologia**, com foco na análise de dados climáticos, caracterização clima–solo–cultura e aplicação em balanço hídrico agrícola, utilizando **Python no Google Colab** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/exemplo_notebook.ipynb)
+Este repositório reúne notebooks didáticos utilizados na área de **Agrometeorologia**, com foco na análise de dados climáticos, caracterização clima–solo–cultura e aplicação em balanço hídrico agrícola, utilizando **Python no Google Colab** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/exemplo_notebook.ipynb)
 
 Os notebooks foram desenvolvidos com abordagem prática, utilizando dados reais e exemplos aplicados à agricultura brasileira.
 
@@ -16,18 +16,18 @@ OLIVEIRA, Fabricio Correia de. Agrometeorologia: v. 1.0. Zenodo, 2026. DOI: 10.5
 
 ## 🎯 Objetivos da disciplina
 
-Ao final da disciplina, discentes do terceiro período são capazes de avaliar o efeito de elementos climáticos e meteorológicos sobre o planejamento de uso da terra e das operações agrícolas e pecuárias, relacionando informações de tempo e clima com os sistemas de produção agropecuária, com decisões sustentáveis e inovadoras. 
+Ao final do Curso, discentes são capazes de avaliar o efeito de elementos climáticos e meteorológicos sobre o planejamento de uso da terra e das operações agrícolas e pecuárias, relacionando informações de tempo e clima com os sistemas de produção agropecuária, com decisões sustentáveis e inovadoras. 
 
 ---
 
 ## 🚀 Como utilizar os notebooks
 
 1. Abra o notebook desejado diretamente no GitHub  
-2. Clique em **“Open in Colab”**  
-3. Execute as células **na ordem**  
-4. Leia atentamente os textos explicativos (Markdown) e comentários no código
-5. Para baixar arquivos retire o # e execute o bloco de código
-6. Os arquivos com final .csv são dados brutos, não precisar ser abertos
+2. Clique em **“Open in Colab”**
+3. Faça uma cópia para seu Drive ou Execute as células **na ordem**  
+5. Leia atentamente os textos explicativos (Markdown) e comentários no código
+6. Para baixar arquivos retire o # e execute o bloco de código
+7. Os arquivos com final .csv são dados brutos, não precisar ser abertos
 
 ---
 
@@ -158,7 +158,7 @@ Calcular e analisar o **balanço hídrico agrícola** integrando clima, solo e c
 
 ---
 ---
-### 🔹 EXTRA. baixar dados de SANTA HELENA - PR
+### 🔹 EXTRA 1. baixar dados de SANTA HELENA - PR
 
 #### `GAMBITEC_DADOS_SH.ipynb`
 
@@ -169,6 +169,19 @@ Baixar dados meteorológicos para Santa Helena - PR.
 
 **Conteúdos abordados:**
 - Baixa dados do SIMEPAR para Santa Helena - PR
+
+---
+### 🔹 EXTRA 2. NoteBook para gráficos gerais
+
+#### `06_bh_cultura.ipynb`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/06_bh_cultura.ipynb)
+
+**Objetivo:**  
+Construção de gráficos gerais, barra, linhas, heatmap, boxplot.
+
+**Conteúdos abordados:**
+- Construir gráficos 
 
 **👨‍🏫 Autor**
 
