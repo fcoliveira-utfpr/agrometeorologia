@@ -3,7 +3,8 @@
 Este repositório reúne notebooks didáticos utilizados na área de **Agrometeorologia**, com foco na análise de dados climáticos, caracterização clima–solo–cultura e aplicação em balanço hídrico agrícola, utilizando **Python no Google Colab** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/exemplo_notebook.ipynb)
 
 Os notebooks foram desenvolvidos com abordagem prática, utilizando dados reais e exemplos aplicados à agricultura brasileira.
-
+---
+Apresentação: ["Manipulação e visualização inteligente de dados meteorológicos"]([https://portal.inmet.gov.br/](https://docs.google.com/presentation/d/1WEEhoKqe4tz6hYs61jR8Msn0t49pVcof72aSf2N6urk/preview?slide=id.p1)
 ---
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19342886.svg)](https://doi.org/10.5281/zenodo.19342886)
 
