@@ -161,7 +161,7 @@ Calcular e analisar o **balanço hídrico agrícola** integrando clima, solo e c
 
 #### `07_graficos_gerais.ipynb`
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/06_bh_cultura.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/07_graficos_gerais.ipynb)
 
 **Objetivo:**  
 Construção de gráficos gerais, barra, linhas, heatmap, boxplot.
