@@ -57,7 +57,6 @@
             float: left;
             margin-right: 10px;
             border: 1px solid #333;
-            background: linear-gradient(to bottom, blue, cyan, yellow, orange, red);
             border-radius: 4px;
         }
         .legend-labels {
@@ -230,7 +229,7 @@
             <div class="lg:col-span-1 space-y-4">
                 <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-t-emerald-600">
                     <h2 class="text-lg font-bold mb-4 text-slate-800 flex items-center gap-2 border-b pb-2">
-                        <i data-lucide="map-pin" class="w-5 h-5 text-emerald-600"></i> Seleção de Área
+                        <i data-lucide="map-pin" class="w-5 h-5 text-emerald-600"></i> Parâmetros
                     </h2>
                     
                     <label class="block mb-2 text-sm font-bold text-slate-500 uppercase">Estado (UF):</label>
@@ -262,11 +261,21 @@
                         <option value="SP">São Paulo</option>
                         <option value="TO">Tocantins</option>
                     </select>
+
+                    <label class="block mb-2 mt-4 text-sm font-bold text-slate-500 uppercase">Variável Analisada:</label>
+                    <select id="varSelect" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-700">
+                        <option value="PR" selected>Precipitação - Chuva Acumulada</option>
+                        <option value="PET">Evapotranspiração - ETP</option>
+                        <option value="TMED">Temperatura Média Anual</option>
+                    </select>
                     
                     <div class="mt-6 space-y-3">
                         <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
                             <h4 class="text-xs font-black text-emerald-800 uppercase tracking-widest mb-1">Fonte de Dados</h4>
-                            <p class="text-xs text-emerald-600">TerraClimate Normal (1991-2020). Malhas oficiais do IBGE.</p>
+                            <p class="text-xs text-emerald-600 leading-relaxed">
+                                Base TerraClimate e Clima Solo Local.<br>
+                                Normais Climatológicas de 1991-2020.
+                            </p>
                         </div>
                         <div id="map-status" class="text-xs text-center py-2 px-3 rounded-lg font-bold bg-slate-100 text-slate-500">
                             Aguardando inicialização...
@@ -310,7 +319,6 @@
                 btnDash.classList.remove('nav-active');
                 btnMap.classList.add('nav-active');
                 
-                // O Leaflet precisa que a div esteja visível antes de renderizar corretamente
                 if (!isMapInitialized) {
                     setTimeout(() => {
                         initMap();
@@ -318,7 +326,7 @@
                         isMapInitialized = true;
                     }, 100);
                 } else {
-                    map.invalidateSize(); // Corrige tiles cinzas ao alternar abas
+                    map.invalidateSize();
                 }
             }
         }
@@ -524,12 +532,19 @@
         // ==========================================
         // LÓGICA DO MAPA (NORMAIS CLIMATOLÓGICAS)
         // ==========================================
-        const MAP_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/TerraClimate_PR_PET_Normal_1991_2020.csv";
-        let map, geojsonLayer, mapCsvData = [], currentMapUf = "PR";
+        const PR_PET_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/TerraClimate_PR_PET_Normal_1991_2020.csv";
+        const TEMP_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/clima_solo_local.csv";
+        
+        let map, geojsonLayer;
+        let mapCsvDataPR = [];
+        let mapCsvDataTemp = [];
+        
+        let currentMapUf = "PR";
+        let currentMapVar = "PR"; // Valores: PR, PET, TMED
 
         function initMap() {
             if (map) return;
-            map = L.map('map').setView([-24.5, -51.0], 6); // Focado no PR inicialmente
+            map = L.map('map').setView([-24.5, -51.0], 6); 
             
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap &copy; CARTO'
@@ -557,20 +572,26 @@
             }
         }
 
-        function getLinearColormap(value, vmin, vmax) {
+        function getLinearColormap(value, vmin, vmax, isTemp) {
             if (value === null || isNaN(value) || value === undefined) return '#dddddd';
-            if (vmax === vmin) return 'blue';
+            if (vmax === vmin) return isTemp ? 'red' : 'blue';
 
             let ratio = (value - vmin) / (vmax - vmin);
             ratio = Math.max(0, Math.min(1, ratio)); 
 
-            const colors = [
+            // Base colors (Red to Blue)
+            let colors = [
                 [255, 0, 0],     // Red
                 [255, 165, 0],   // Orange
                 [255, 255, 0],   // Yellow
                 [0, 255, 255],   // Cyan
                 [0, 0, 255]      // Blue
             ];
+            
+            // Inverte as cores para temperatura (Azul para Frio, Vermelho para Quente)
+            if (isTemp) {
+                colors.reverse();
+            }
 
             let scaled = ratio * (colors.length - 1);
             let index = Math.floor(scaled);
@@ -594,52 +615,109 @@
         }
 
         function loadMapCsv() {
-            updateMapStatus("Lendo arquivo TerraClimate...", "bg-blue-100 text-blue-800");
-            Papa.parse(MAP_CSV_URL, {
+            updateMapStatus("Lendo arquivos climáticos...", "bg-blue-100 text-blue-800");
+
+            let loadedPR = false;
+            let loadedTemp = false;
+
+            const checkReady = () => {
+                if (loadedPR && loadedTemp) processMapData();
+            };
+
+            // Carrega CSV de Chuva e ETP
+            Papa.parse(PR_PET_CSV_URL, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
                 complete: function(results) {
-                    mapCsvData = results.data;
-                    processMapData();
+                    mapCsvDataPR = results.data;
+                    loadedPR = true;
+                    checkReady();
                 },
-                error: function() {
-                    updateMapStatus("Erro ao carregar CSV", "bg-red-100 text-red-800");
-                }
+                error: function() { updateMapStatus("Erro CSV PR/PET", "bg-red-100 text-red-800"); }
+            });
+
+            // Carrega CSV de Temperatura
+            Papa.parse(TEMP_CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    mapCsvDataTemp = results.data;
+                    loadedTemp = true;
+                    checkReady();
+                },
+                error: function() { updateMapStatus("Erro CSV Temperatura", "bg-red-100 text-red-800"); }
             });
         }
 
         async function processMapData() {
-            updateMapStatus(`Sintetizando ${currentMapUf}...`, "bg-blue-100 text-blue-800");
+            const isTemp = currentMapVar === 'TMED';
+            let varNameLabel = '';
+            let unit = '';
+            
+            if (currentMapVar === 'PR') { varNameLabel = 'Precipitação'; unit = 'mm'; }
+            else if (currentMapVar === 'PET') { varNameLabel = 'Evapotranspiração'; unit = 'mm'; }
+            else if (currentMapVar === 'TMED') { varNameLabel = 'Temperatura Média'; unit = '°C'; }
 
-            const rainDataMap = new Map();
-            let minRain = Infinity, maxRain = -Infinity;
+            updateMapStatus(`Sintetizando ${varNameLabel} em ${currentMapUf}...`, "bg-blue-100 text-blue-800");
 
-            mapCsvData.filter(row => row.Estado === currentMapUf).forEach(row => {
-                let sum = 0;
-                let hasData = false;
-                for (let i = 1; i <= 12; i++) {
-                    const col = `PR_${i.toString().padStart(2, '0')}`;
-                    const valRaw = row[col];
-                    if (valRaw) {
-                        const valFloat = parseFloat(valRaw.toString().replace(/,/g, '.'));
-                        if (!isNaN(valFloat)) {
-                            sum += valFloat;
-                            hasData = true;
+            const mapDataMap = new Map();
+            let minVal = Infinity, maxVal = -Infinity;
+
+            if (isTemp) {
+                // Lógica para Temperatura Média (clima_solo_local.csv)
+                const meses = ["jan","fev","mar","abr","maio","jun","jul","ago","set","out","nov","dez"];
+                mapCsvDataTemp.filter(row => row.Estado === currentMapUf).forEach(row => {
+                    let sum = 0;
+                    let count = 0;
+                    for (let m of meses) {
+                        const col = `T_${m}`;
+                        const valRaw = row[col];
+                        if (valRaw) {
+                            const valFloat = parseFloat(valRaw.toString().replace(/,/g, '.'));
+                            if (!isNaN(valFloat)) {
+                                sum += valFloat;
+                                count++;
+                            }
                         }
                     }
-                }
-                
-                const name = normalizeMapString(row['Município']);
-                rainDataMap.set(name, sum);
-                
-                if (hasData) {
-                    if (sum < minRain) minRain = sum;
-                    if (sum > maxRain) maxRain = sum;
-                }
-            });
+                    if (count > 0) {
+                        const mean = sum / count;
+                        const name = normalizeMapString(row['Município']);
+                        mapDataMap.set(name, mean);
+                        if (mean < minVal) minVal = mean;
+                        if (mean > maxVal) maxVal = mean;
+                    }
+                });
+            } else {
+                // Lógica para Precipitação ou ETP (TerraClimate_PR_PET_Normal_1991_2020.csv)
+                const prefix = currentMapVar === 'PR' ? 'PR_' : 'PET_';
+                mapCsvDataPR.filter(row => row.Estado === currentMapUf).forEach(row => {
+                    let sum = 0;
+                    let hasData = false;
+                    for (let i = 1; i <= 12; i++) {
+                        const col = `${prefix}${i.toString().padStart(2, '0')}`;
+                        const valRaw = row[col];
+                        if (valRaw) {
+                            const valFloat = parseFloat(valRaw.toString().replace(/,/g, '.'));
+                            if (!isNaN(valFloat)) {
+                                sum += valFloat;
+                                hasData = true;
+                            }
+                        }
+                    }
+                    if (hasData) {
+                        const name = normalizeMapString(row['Município']);
+                        mapDataMap.set(name, sum);
+                        if (sum < minVal) minVal = sum;
+                        if (sum > maxVal) maxVal = sum;
+                    }
+                });
+            }
 
-            if (minRain === Infinity) { minRain = 0; maxRain = 1000; }
+            // Fallback limits se os dados estiverem vazios
+            if (minVal === Infinity) { minVal = 0; maxVal = isTemp ? 40 : 1000; }
 
             try {
                 updateMapStatus("Buscando Base IBGE...", "bg-yellow-100 text-yellow-800");
@@ -666,10 +744,10 @@
                     style: function(feature) {
                         const codarea = feature.properties.codarea || "";
                         const mName = idToName.get(codarea) || "";
-                        const valor = rainDataMap.has(mName) ? rainDataMap.get(mName) : null;
+                        const valor = mapDataMap.has(mName) ? mapDataMap.get(mName) : null;
                         
                         return {
-                            fillColor: valor !== null ? getLinearColormap(valor, minRain, maxRain) : '#dddddd',
+                            fillColor: valor !== null ? getLinearColormap(valor, minVal, maxVal, isTemp) : '#dddddd',
                             color: 'black',
                             weight: 0.4,
                             fillOpacity: 0.8,
@@ -680,12 +758,12 @@
                         const codarea = feature.properties.codarea || "";
                         const mName = idToName.get(codarea) || "";
                         const originalName = idToOriginalName.get(codarea) || "Desconhecido";
-                        const valor = rainDataMap.has(mName) ? rainDataMap.get(mName) : null;
+                        const valor = mapDataMap.has(mName) ? mapDataMap.get(mName) : null;
                         
                         const tooltipContent = `
                             <div style="text-align: left;">
                                 <b style="color: #047857;">Município:</b> ${originalName}<br>
-                                <b style="color: #047857;">Chuva acumulada (mm):</b> ${valor !== null ? valor.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 3}) : 'Sem dados'}
+                                <b style="color: #047857;">${varNameLabel}:</b> ${valor !== null ? valor.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 3}) + ' ' + unit : 'Sem dados'}
                             </div>
                         `;
                         layer.bindTooltip(tooltipContent, { sticky: true, className: 'custom-tooltip' });
@@ -693,7 +771,7 @@
                 }).addTo(map);
 
                 map.fitBounds(geojsonLayer.getBounds());
-                updateMapLegend(minRain, maxRain);
+                updateMapLegend(minVal, maxVal, varNameLabel, unit, isTemp);
                 
                 updateMapStatus(`Mapa ${currentMapUf} renderizado!`, "bg-green-100 text-green-800");
 
@@ -703,17 +781,22 @@
             }
         }
 
-        function updateMapLegend(min, max) {
+        function updateMapLegend(min, max, varNameLabel, unit, isTemp) {
             const legendContainer = document.querySelector('.legend-control');
             if (legendContainer) legendContainer.remove();
+            
+            // Inverte a direção visual da legenda CSS dependendo se for Temperatura ou Chuva/ETP
+            const gradient = isTemp 
+                ? "linear-gradient(to bottom, red, orange, yellow, cyan, blue)" 
+                : "linear-gradient(to bottom, blue, cyan, yellow, orange, red)";
 
             const legend = L.control({position: 'topright'});
             legend.onAdd = function (map) {
                 const div = L.DomUtil.create('div', 'info-map legend-map legend-control');
                 div.innerHTML = `
-                    <div style="font-weight: bold; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #047857;">Total (mm) – ${currentMapUf}</div>
+                    <div style="font-weight: bold; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #047857;">${varNameLabel} (${unit})<br>${currentMapUf}</div>
                     <div style="display: flex;">
-                        <div class="color-bar"></div>
+                        <div class="color-bar" style="background: ${gradient};"></div>
                         <div class="legend-labels text-slate-600">
                             <span>${max.toLocaleString('pt-BR', {maximumFractionDigits: 1})}</span>
                             <span>${((max+min)/2).toLocaleString('pt-BR', {maximumFractionDigits: 1})}</span>
@@ -733,13 +816,19 @@
         }
 
         // ==========================================
-        // INICIALIZAÇÃO
+        // INICIALIZAÇÃO E EVENTOS
         // ==========================================
         document.getElementById('btn-process').addEventListener('click', processDashData);
         document.getElementById('btn-download').addEventListener('click', downloadCSV);
         
         document.getElementById('stateSelect').addEventListener('change', (e) => {
             currentMapUf = e.target.value;
+            processMapData();
+        });
+
+        // Evento para a mudança da variável
+        document.getElementById('varSelect').addEventListener('change', (e) => {
+            currentMapVar = e.target.value;
             processMapData();
         });
 
