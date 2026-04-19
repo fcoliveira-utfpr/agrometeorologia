@@ -1,1009 +1,224 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAMBITEC Data SH</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- PapaParse -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <!-- Leaflet CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMBITEC Data SH</title>
 
-    <!-- Flatpickr para formatação de datas (Dia/Mês/Ano) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(229, 231, 235, 0.5);
-        }
-        .chart-container { height: 300px; position: relative; }
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        /* Estilos do Mapa */
-        #map { height: 650px; width: 100%; border-radius: 8px; z-index: 1; }
-        .info-map {
-            padding: 8px 12px;
-            font: 14px/16px 'Inter', sans-serif;
-            background: white;
-            background: rgba(255,255,255,0.95);
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-        }
-        .legend-map {
-            line-height: 24px;
-            color: #333;
-        }
-        .legend-map .color-bar {
-            width: 20px;
-            height: 100px;
-            float: left;
-            margin-right: 10px;
-            border: 1px solid #333;
-            background: linear-gradient(to bottom, blue, cyan, yellow, orange, red);
-            border-radius: 4px;
-        }
-        .legend-labels {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .custom-tooltip {
-            background: white;
-            border: 1px solid #10b981;
-            border-radius: 6px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        
-        /* Estado ativo da navegação */
-        .nav-active {
-            background-color: #047857 !important; /* emerald-700 */
-            border-color: #047857 !important;
-            color: white !important;
-        }
-    </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; }
+.chart-container { height: 300px; }
+</style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
 
-    <!-- Ecrã de Carregamento -->
-    <div id="loading-screen" class="loading-overlay">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600 mb-4"></div>
-        <h2 class="text-xl font-bold text-emerald-800">GAMBITEC Data SH</h2>
-        <p class="text-slate-500 animate-pulse" id="loading-text">Sincronizando dados...</p>
-    </div>
+<body class="bg-gray-50 p-6">
 
-    <!-- Cabeçalho com Navegação -->
-    <header class="bg-emerald-800 text-white p-6 shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto flex flex-col xl:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3 w-full xl:w-auto">
-                <i data-lucide="leaf" class="w-10 h-10 text-emerald-300"></i>
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight">GAMBITEC Data SH</h1>
-                    <p class="text-emerald-100 text-sm opacity-90">Monitoramento Agrometeorológico</p>
-                </div>
-            </div>
-            
-            <!-- Botões de Navegação -->
-            <div class="flex flex-wrap justify-center gap-2 w-full xl:w-auto">
-                <button id="btn-nav-dash" onclick="switchView('dashboard')" class="nav-active px-5 py-2.5 bg-emerald-900 border border-emerald-700 rounded-xl text-emerald-100 font-bold hover:bg-emerald-700 transition-all flex items-center gap-2">
-                    <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Registos SIMEPAR
-                </button>
-                <button id="btn-nav-map" onclick="switchView('map')" class="px-5 py-2.5 bg-emerald-900 border border-emerald-700 rounded-xl text-emerald-100 font-bold hover:bg-emerald-700 transition-all flex items-center gap-2">
-                    <i data-lucide="map" class="w-4 h-4"></i> Normais Climatológicas
-                </button>
-                <button id="btn-nav-map" onclick="window.location.href='index2.html';" class="px-5 py-2.5 bg-emerald-900 border border-emerald-700 rounded-xl text-emerald-100 font-bold hover:bg-emerald-700 transition-all flex items-center gap-2">
-                    <i data-lucide="map" class="w-4 h-4"></i> dados NASA-POWER
-                </button>
-            </div>
+<h1 class="text-2xl font-bold mb-4">GAMBITEC Data SH</h1>
 
-            <div class="hidden md:flex items-center gap-2 bg-emerald-900/50 px-4 py-2 rounded-full border border-emerald-700/50">
-                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-200">Sistema Ativo</span>
-            </div>
-        </div>
-    </header>
+<!-- NAV -->
+<div class="mb-6 flex gap-2">
+    <button id="btn-nav-dash" class="bg-green-600 text-white px-4 py-2 rounded">Dashboard</button>
+    <button id="btn-nav-map" class="bg-gray-300 px-4 py-2 rounded">Mapa</button>
+    <button id="btn-nav-nasa" onclick="window.location.href='index2.html';" class="bg-gray-300 px-4 py-2 rounded">NASA</button>
+</div>
 
-    <!-- VISTAS -->
-    
-    <!-- VISTA 1: DASHBOARD SIMEPAR -->
-    <main id="view-dashboard" class="container mx-auto p-4 md:p-8 block animate-fade-in">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Barra Lateral -->
-            <div class="lg:col-span-1">
-                <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-t-emerald-600 sticky top-28">
-                    <h3 class="font-bold mb-4 flex items-center gap-2 text-slate-800">
-                        <i data-lucide="calendar" class="w-5 h-5"></i> Filtro de Período
-                    </h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data Inicial</label>
-                            <input type="date" id="date-start" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data Final</label>
-                            <input type="date" id="date-end" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        
-                        <div class="pt-2 space-y-3">
-                            <button id="btn-process" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
-                                <i data-lucide="filter" class="w-4 h-4"></i> Filtrar Agora
-                            </button>
-                            
-                            <button id="btn-download" class="w-full bg-white hover:bg-slate-50 text-emerald-700 border-2 border-emerald-600 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95">
-                                <i data-lucide="download" class="w-4 h-4"></i> Exportar CSV
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- FILTRO -->
+<div class="mb-4 flex gap-2">
+    <input id="date-start" type="text" placeholder="Data inicial" class="border p-2 rounded">
+    <input id="date-end" type="text" placeholder="Data final" class="border p-2 rounded">
+    <button id="btn-process" class="bg-blue-600 text-white px-4 rounded">Filtrar</button>
+</div>
 
-            <!-- Estatísticas -->
-            <div class="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="glass-card p-5 rounded-2xl shadow-sm border-b-4 border-blue-500">
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Precipitação Total</p>
-                    <h2 class="text-3xl font-bold mt-2 text-slate-800" id="stat-precip">0.0 <small class="text-sm">mm</small></h2>
-                </div>
-                <div class="glass-card p-5 rounded-2xl shadow-sm border-b-4 border-orange-500">
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Temperatura Média</p>
-                    <h2 class="text-3xl font-bold mt-2 text-slate-800" id="stat-temp">0.0 <small class="text-sm">°C</small></h2>
-                </div>
-                <div class="glass-card p-5 rounded-2xl shadow-sm border-b-4 border-yellow-500">
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Radiação Solar</p>
-                    <h2 class="text-3xl font-bold mt-2 text-slate-800" id="stat-rad">0.0 <small class="text-sm">MJ/m²</small></h2>
-                </div>
-                <div class="glass-card p-5 rounded-2xl shadow-sm border-b-4 border-cyan-500">
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Humidade Relativa</p>
-                    <h2 class="text-3xl font-bold mt-2 text-slate-800" id="stat-umid">0.0 <small class="text-sm">%</small></h2>
-                </div>
-                <div class="glass-card p-5 rounded-2xl shadow-sm border-b-4 border-emerald-500">
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Velocidade Vento</p>
-                    <h2 class="text-3xl font-bold mt-2 text-slate-800" id="stat-wind">0.0 <small class="text-sm">m/s</small></h2>
-                </div>
-                <div class="glass-card p-5 rounded-2xl shadow-sm border-b-4 border-slate-400">
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Total de Dias</p>
-                    <h2 class="text-3xl font-bold mt-2 text-slate-800" id="stat-days">0</h2>
-                </div>
-            </div>
-        </div>
+<!-- STATS -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div>Precip: <span id="stat-precip">0</span></div>
+    <div>Temp: <span id="stat-temp">0</span></div>
+    <div>UR: <span id="stat-umid">0</span></div>
+    <div>Dias: <span id="stat-days">0</span></div>
+</div>
 
-        <!-- Gráficos -->
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
-            <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h3 class="font-bold mb-6 text-slate-700 flex items-center gap-2"><i data-lucide="cloud-rain" class="w-4 h-4"></i> Chuva e Humidade</h3>
-                <div class="chart-container"><canvas id="precipChart"></canvas></div>
-            </div>
-            <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h3 class="font-bold mb-6 text-slate-700 flex items-center gap-2"><i data-lucide="thermometer" class="w-4 h-4"></i> Temperaturas</h3>
-                <div class="chart-container"><canvas id="tempChart"></canvas></div>
-            </div>
-        </div>
+<!-- GRÁFICO -->
+<div class="chart-container mb-6">
+    <canvas id="precipChart"></canvas>
+</div>
 
-        <!-- Tabela -->
-        <div class="glass-card rounded-2xl shadow-sm overflow-hidden border border-slate-200">
-            <div class="p-5 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-                <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="table" class="w-4 h-4"></i> Registos Diários</h3>
-                <span class="text-[10px] bg-white px-2 py-1 rounded border font-mono font-bold text-emerald-700" id="row-count">0 registos</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-[11px]">
-                    <thead class="bg-white text-slate-400 uppercase font-black border-b">
-                        <tr>
-                            <th class="px-6 py-4">Data</th>
-                            <th class="px-6 py-4">T. Máx (°C)</th>
-                            <th class="px-6 py-4">T. Mín (°C)</th>
-                            <th class="px-6 py-4">T. Méd (°C)</th>
-                            <th class="px-6 py-4">HR (%)</th>
-                            <th class="px-6 py-4">Vento (m/s)</th>
-                            <th class="px-6 py-4">Radiação (MJ)</th>
-                            <th class="px-6 py-4">Chuva (mm)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="data-table-body" class="divide-y divide-slate-100 font-medium text-slate-600">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+<!-- TABELA -->
+<table class="w-full text-sm border">
+<thead class="bg-gray-200">
+<tr>
+<th>Data</th><th>Tmax</th><th>Tmin</th><th>Tmed</th><th>UR</th><th>Chuva</th>
+</tr>
+</thead>
+<tbody id="data-table-body"></tbody>
+</table>
 
-    <!-- VISTA 2: MAPA CLIMATOLÓGICO -->
-    <main id="view-map" class="hidden container mx-auto p-4 md:p-8 animate-fade-in">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div class="lg:col-span-1 space-y-4">
-                <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-t-emerald-600">
-                    <h2 class="text-lg font-bold mb-4 text-slate-800 flex items-center gap-2 border-b pb-2">
-                        <i data-lucide="map-pin" class="w-5 h-5 text-emerald-600"></i> Parâmetros
-                    </h2>
-                    
-                    <label class="block mb-2 text-sm font-bold text-slate-500 uppercase">Estado (UF):</label>
-                    <select id="stateSelect" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-700">
-                        <option value="AC">Acre</option>
-                        <option value="AL">Alagoas</option>
-                        <option value="AM">Amazonas</option>
-                        <option value="BA">Bahia</option>
-                        <option value="CE">Ceará</option>
-                        <option value="DF">Distrito Federal</option>
-                        <option value="ES">Espírito Santo</option>
-                        <option value="GO">Goiás</option>
-                        <option value="MA">Maranhão</option>
-                        <option value="MG">Minas Gerais</option>
-                        <option value="MS">Mato Grosso do Sul</option>
-                        <option value="MT">Mato Grosso</option>
-                        <option value="PA">Pará</option>
-                        <option value="PB">Paraíba</option>
-                        <option value="PE">Pernambuco</option>
-                        <option value="PI">Piauí</option>
-                        <option value="PR" selected>Paraná</option>
-                        <option value="RJ">Rio de Janeiro</option>
-                        <option value="RN">Rio Grande do Norte</option>
-                        <option value="RO">Rondônia</option>
-                        <option value="RR">Roraima</option>
-                        <option value="RS">Rio Grande do Sul</option>
-                        <option value="SC">Santa Catarina</option>
-                        <option value="SE">Sergipe</option>
-                        <option value="SP">São Paulo</option>
-                        <option value="TO">Tocantins</option>
-                    </select>
+<script>
+const CSV_URL = 'https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/SIMEPAR_dados_diario.csv';
 
-                    <label class="block mb-2 mt-4 text-sm font-bold text-slate-500 uppercase">Variável Analisada:</label>
-                    <select id="varSelect" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-700">
-                        <option value="PR" selected>Precipitação - Chuva Acumulada</option>
-                        <option value="PET">Evapotranspiração - ETP</option>
-                        <option value="TMED">Temperatura Média Anual</option>
-                        <option value="KOPPEN">Clima - Classificação Köppen</option>
-                        <option value="DTA">Solo - Disp. Total de Água (DTA)</option>
-                    </select>
-                    
-                    <div class="mt-6 space-y-3">
-                        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                            <h4 class="text-xs font-black text-emerald-800 uppercase tracking-widest mb-1">Fonte de Dados</h4>
-                            <p class="text-xs text-emerald-600 leading-relaxed">
-                                Bases:<br>
-                                Clima Koppen (Alvares et al., 2013).<br>
-                                Normais Climatológicas de 1991-2020 (TerraClimate).<br>
-                                DTA (mm/m) (Atlas Irrigação, 2021).
-                            </p>
-                        </div>
-                        <div id="map-status" class="text-xs text-center py-2 px-3 rounded-lg font-bold bg-slate-100 text-slate-500">
-                            A aguardar inicialização...
-                        </div>
-                    </div>
-                </div>
-            </div>
+let fullData = [];
+let filteredData = [];
+let chart;
 
-            <div class="lg:col-span-3">
-                <div class="glass-card p-2 rounded-2xl shadow-sm border border-slate-200">
-                    <div id="map"></div>
-                </div>
-            </div>
-        </div>
-    </main>
+// ==========================
+// FUNÇÕES SEGURAS
+// ==========================
+function safeNumber(val){
+    const n = parseFloat(val);
+    return isNaN(n) ? null : n;
+}
 
-    <script>
-        // ==========================================
-        // VARIÁVEIS GLOBAIS E CONTROLO DE ECRÃS
-        // ==========================================
-        let isMapInitialized = false;
+function safeToFixed(val){
+    return (val === null || isNaN(val)) ? '-' : val.toFixed(1);
+}
 
-        function initIcons() { 
-            if (typeof lucide !== 'undefined') lucide.createIcons(); 
+// ==========================
+// PARSER ROBUSTO
+// ==========================
+function parseRow(row){
+    const get = (terms)=>{
+        const key = Object.keys(row).find(k =>
+            terms.some(t => k.toLowerCase().includes(t))
+        );
+        return key ? safeNumber(row[key].replace(',', '.')) : null;
+    };
+
+    return {
+        date: new Date(row['Data']),
+        dateStr: row['Data'],
+        tmax: get(['tmax']),
+        tmin: get(['tmin']),
+        tmed: get(['tmed']),
+        umid: get(['ur']),
+        precip: get(['chuva'])
+    };
+}
+
+// ==========================
+// LOAD CSV
+// ==========================
+async function loadData(){
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+
+    Papa.parse(text, {
+        header:true,
+        complete: function(results){
+            fullData = results.data.map(parseRow).filter(d => d.date);
+            fullData.sort((a,b)=>a.date-b.date);
+
+            initDatePicker();
+            processData();
         }
+    });
+}
 
-        function switchView(viewName) {
-            const viewDash = document.getElementById('view-dashboard');
-            const viewMap = document.getElementById('view-map');
-            const btnDash = document.getElementById('btn-nav-dash');
-            const btnMap = document.getElementById('btn-nav-map');
+// ==========================
+// DATE PICKER
+// ==========================
+function initDatePicker(){
+    flatpickr("#date-start", {
+        locale:"pt",
+        dateFormat:"Y-m-d",
+        defaultDate: fullData[0].date
+    });
 
-            if (viewName === 'dashboard') {
-                viewDash.classList.remove('hidden');
-                viewMap.classList.add('hidden');
-                btnDash.classList.add('nav-active');
-                btnMap.classList.remove('nav-active');
-            } else if (viewName === 'map') {
-                viewDash.classList.add('hidden');
-                viewMap.classList.remove('hidden');
-                btnDash.classList.remove('nav-active');
-                btnMap.classList.add('nav-active');
-                
-                if (!isMapInitialized) {
-                    setTimeout(() => {
-                        initMap();
-                        loadMapCsv();
-                        isMapInitialized = true;
-                    }, 100);
-                } else {
-                    map.invalidateSize();
+    flatpickr("#date-end", {
+        locale:"pt",
+        dateFormat:"Y-m-d",
+        defaultDate: fullData[fullData.length-1].date
+    });
+}
+
+// ==========================
+// PROCESSAMENTO
+// ==========================
+function processData(){
+    const ds = document.getElementById('date-start').value;
+    const de = document.getElementById('date-end').value;
+
+    if(!ds || !de){
+        alert("Selecione as datas!");
+        return;
+    }
+
+    const start = new Date(ds);
+    const end = new Date(de);
+
+    filteredData = fullData.filter(d => d.date >= start && d.date <= end);
+
+    updateUI();
+    updateChart();
+}
+
+// ==========================
+// UI
+// ==========================
+function updateUI(){
+    const tbody = document.getElementById('data-table-body');
+
+    if(filteredData.length === 0){
+        tbody.innerHTML = "<tr><td colspan='6'>Sem dados</td></tr>";
+        return;
+    }
+
+    const sum = key => filteredData.reduce((a,b)=>a+(b[key]||0),0);
+    const avg = key => sum(key)/filteredData.length;
+
+    document.getElementById('stat-precip').innerText = safeToFixed(sum('precip'));
+    document.getElementById('stat-temp').innerText = safeToFixed(avg('tmed'));
+    document.getElementById('stat-umid').innerText = safeToFixed(avg('umid'));
+    document.getElementById('stat-days').innerText = filteredData.length;
+
+    tbody.innerHTML = filteredData.map(d=>`
+        <tr>
+            <td>${d.dateStr}</td>
+            <td>${safeToFixed(d.tmax)}</td>
+            <td>${safeToFixed(d.tmin)}</td>
+            <td>${safeToFixed(d.tmed)}</td>
+            <td>${safeToFixed(d.umid)}</td>
+            <td>${safeToFixed(d.precip)}</td>
+        </tr>
+    `).join('');
+}
+
+// ==========================
+// GRÁFICO
+// ==========================
+function updateChart(){
+    const labels = filteredData.map(d=>d.dateStr);
+
+    if(chart) chart.destroy();
+
+    chart = new Chart(document.getElementById('precipChart'), {
+        type:'bar',
+        data:{
+            labels:labels,
+            datasets:[
+                {
+                    label:'Chuva',
+                    data: filteredData.map(d=>d.precip)
                 }
-            }
+            ]
         }
+    });
+}
 
-        // Função universal e segura para converter valores de CSV independentemente do formato
-        function parseBrazilianFloat(valRaw) {
-            if (valRaw === null || valRaw === undefined || valRaw === '') return NaN;
-            let str = valRaw.toString().trim();
-            
-            // Verifica se tem vírgula e ponto (ex: 1.234,56 ou 1,234.56)
-            if (str.includes(',') && str.includes('.')) {
-                if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
-                    // O separador decimal é a vírgula (ex: 1.234,56)
-                    str = str.replace(/\./g, '').replace(',', '.');
-                } else {
-                    // O separador decimal é o ponto (ex: 1,234.56)
-                    str = str.replace(/,/g, '');
-                }
-            } else if (str.includes(',')) {
-                // Só tem vírgula, assume que é o separador decimal (ex: 123,4)
-                str = str.replace(',', '.');
-            }
-            // Se só tiver ponto, o parseFloat processa nativamente (formato americano)
-            return parseFloat(str);
-        }
+// ==========================
+// EVENTOS
+// ==========================
+document.getElementById('btn-process').addEventListener('click', processData);
 
-        // Função dinâmica para encontrar colunas de Estado e Município protegendo contra nomes variáveis no CSV
-        const getGeographicKeys = (row) => {
-            const keys = Object.keys(row);
-            const kEst = keys.find(k => ['estado', 'uf', 'estados'].includes(k.toLowerCase().trim()));
-            const kMun = keys.find(k => {
-                const kl = k.toLowerCase().trim();
-                return kl.includes('município') || kl.includes('municipio') || kl.includes('cidade');
-            });
-            return { kEst, kMun };
-        };
+// ==========================
+loadData();
+</script>
 
-        // ==========================================
-        // LÓGICA DO DASHBOARD (SIMEPAR)
-        // ==========================================
-        const DASH_CSV_URL = 'https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/SIMEPAR_dados_diario.csv';
-        let dashFullData = [];
-        let dashFilteredData = [];
-        let charts = {};
-
-        function parseDate(str) {
-            if (!str) return null;
-            const cleanStr = str.toString().replace(/"/g, '').trim();
-            if (cleanStr.includes('/')) {
-                const p = cleanStr.split('/');
-                if (p.length === 3) return new Date(p[2], p[1] - 1, p[0]);
-            }
-            const d = new Date(cleanStr);
-            return isNaN(d.getTime()) ? null : d;
-        }
-
-        function mapDashRow(row) {
-            const findVal = (terms) => {
-                const key = Object.keys(row).find(k => 
-                    terms.some(t => k.toLowerCase().includes(t.toLowerCase()))
-                );
-                return parseBrazilianFloat(row[key]);
-            };
-            const dateKey = Object.keys(row).find(k => k.toLowerCase().includes('data'));
-            const rawDate = row[dateKey] || '';
-            return {
-                dateStr: rawDate.replace(/"/g, '').trim(),
-                dateObj: parseDate(rawDate),
-                tmax: findVal(['tmax']),
-                tmin: findVal(['tmin']),
-                tmed: findVal(['tmed']),
-                umid: findVal(['ur']),
-                vento: findVal(['vento']),
-                rad: findVal(['radiação solar (mj']), 
-                precip: findVal(['chuva'])
-            };
-        }
-
-        async function loadDashData() {
-            const loading = document.getElementById('loading-screen');
-            const loadingText = document.getElementById('loading-text');
-            loadingText.innerText = "A carregar dados SIMEPAR...";
-            
-            try {
-                const res = await fetch(DASH_CSV_URL);
-                const text = await res.text();
-                
-                Papa.parse(text, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        dashFullData = results.data.map(mapDashRow).filter(d => d.dateObj !== null);
-                        
-                        if (dashFullData.length > 0) {
-                            dashFullData.sort((a, b) => a.dateObj - b.dateObj);
-                            
-                            // Define a data inicial padrão como 01/01/2026 (formato YYYY-MM-DD)
-                            // Define a data inicial padrão como 01/01/2026 (formato YYYY-MM-DD)
-                            const first = '2026-01-01'; 
-                            const last = dashFullData[dashFullData.length - 1].dateObj.toISOString().split('T')[0];
-                            
-                            // APAGUE OU COMENTE ESTAS DUAS LINHAS:
-                            // document.getElementById('date-start').value = first;
-                            // document.getElementById('date-end').value = last;
-                            
-                            // ==========================================
-                            // INSIRA A CONFIGURAÇÃO DO FLATPICKR AQUI:
-                            // ==========================================
-                            const flatpickrConfig = {
-                                locale: "pt", 
-                                dateFormat: "Y-m-d", 
-                                altInput: true, 
-                                altFormat: "d/m/Y", 
-                                // Mantenha as classes CSS que você já usava nos seus inputs originais aqui:
-                                altInputClass: "w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-slate-700"
-                            };
-                            
-                            flatpickr("#date-start", { ...flatpickrConfig, defaultDate: first });
-                            flatpickr("#date-end", { ...flatpickrConfig, defaultDate: last });
-                            // ==========================================
-                            
-                            processDashData();
-                            
-                            if (loading) {
-                                loading.style.opacity = '0';
-                                setTimeout(() => loading.style.display = 'none', 500);
-                            }
-                            //
-                            }
-                        }
-                    }
-                });
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao carregar dados meteorológicos.");
-                if (loading) loading.style.display = 'none';
-            }
-        }
-        //aqui
-
-        function processDashData() {
-            const ds = document.getElementById('date-start').value;
-            const de = document.getElementById('date-end').value;
-            if (!ds || !de) return;
-
-            const start = new Date(ds + "T00:00:00");
-            const end = new Date(de + "T23:59:59");
-
-            dashFilteredData = dashFullData.filter(d => d.dateObj >= start && d.dateObj <= end);
-            
-            updateDashUI();
-            updateDashCharts();
-        }
-
-        function downloadCSV() {
-            if (dashFilteredData.length === 0) {
-                alert("Não há dados para exportar no período selecionado.");
-                return;
-            }
-            const header = ["Data", "Tmax (C)", "Tmin (C)", "Tmed (C)", "UR (%)", "Vento (m/s)", "Radiacao (MJ)", "Chuva (mm)"];
-            const rows = dashFilteredData.map(d => [
-                d.dateStr,
-                d.tmax.toString().replace('.', ','),
-                d.tmin.toString().replace('.', ','),
-                d.tmed.toString().replace('.', ','),
-                d.umid.toString().replace('.', ','),
-                d.vento.toString().replace('.', ','),
-                d.rad.toString().replace('.', ','),
-                d.precip.toString().replace('.', ',')
-            ].join(';'));
-
-            const csvContent = "\uFEFF" + [header.join(';'), ...rows].join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            const fileName = `GAMBITEC_SH_${document.getElementById('date-start').value}_a_${document.getElementById('date-end').value}.csv`;
-            link.setAttribute("download", fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function updateDashUI() {
-            const tbody = document.getElementById('data-table-body');
-            
-            if (dashFilteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-slate-400 font-bold">Sem dados para este período.</td></tr>`;
-                return;
-            }
-
-            const sum = (key) => dashFilteredData.reduce((a, b) => a + b[key], 0);
-            const avg = (key) => sum(key) / dashFilteredData.length;
-
-            document.getElementById('stat-precip').innerHTML = `${sum('precip').toFixed(1)} <small class="text-sm">mm</small>`;
-            document.getElementById('stat-temp').innerHTML = `${avg('tmed').toFixed(1)} <small class="text-sm">°C</small>`;
-            document.getElementById('stat-wind').innerHTML = `${avg('vento').toFixed(1)} <small class="text-sm">m/s</small>`;
-            document.getElementById('stat-rad').innerHTML = `${sum('rad').toFixed(1)} <small class="text-sm">MJ</small>`;
-            document.getElementById('stat-umid').innerHTML = `${avg('umid').toFixed(1)} <small class="text-sm">%</small>`;
-            document.getElementById('stat-days').innerText = dashFilteredData.length;
-            document.getElementById('row-count').innerText = `${dashFilteredData.length} registos`;
-
-            tbody.innerHTML = dashFilteredData.map(d => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-4 font-bold text-slate-800">${d.dateStr}</td>
-                    <td class="px-6 py-4 text-red-500">${d.tmax.toFixed(1)}</td>
-                    <td class="px-6 py-4 text-blue-500">${d.tmin.toFixed(1)}</td>
-                    <td class="px-6 py-4 text-orange-500 font-bold">${d.tmed.toFixed(1)}</td>
-                    <td class="px-6 py-4 text-cyan-600">${d.umid.toFixed(1)}%</td>
-                    <td class="px-6 py-4 text-emerald-600">${d.vento.toFixed(1)}</td>
-                    <td class="px-6 py-4 text-yellow-600">${d.rad.toFixed(1)}</td>
-                    <td class="px-6 py-4 text-blue-600 font-bold">${d.precip.toFixed(1)}</td>
-                </tr>
-            `).join('');
-        }
-
-        function updateDashCharts() {
-            const labels = dashFilteredData.map(d => d.dateStr.substring(0, 5));
-            
-            renderChart('precipChart', {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'Chuva (mm)', data: dashFilteredData.map(d => d.precip), backgroundColor: '#3b82f6', yAxisID: 'y' },
-                        { label: 'HR (%)', data: dashFilteredData.map(d => d.umid), type: 'line', borderColor: '#06b6d4', yAxisID: 'y1', pointRadius: 2 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y1: { position: 'right', min: 0, max: 100 } } }
-            });
-
-            renderChart('tempChart', {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'Máx', data: dashFilteredData.map(d => d.tmax), borderColor: '#ef4444', tension: 0.3 },
-                        { label: 'Mín', data: dashFilteredData.map(d => d.tmin), borderColor: '#3b82f6', tension: 0.3 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
-        function renderChart(id, config) {
-            const ctx = document.getElementById(id);
-            if (charts[id]) charts[id].destroy();
-            charts[id] = new Chart(ctx, config);
-        }
-
-        // ==========================================
-        // LÓGICA DO MAPA (NORMAIS CLIMATOLÓGICAS)
-        // ==========================================
-        const PR_PET_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/TerraClimate_PR_PET_Normal_1991_2020.csv";
-        const TEMP_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/clima_solo_local.csv";
-        const CLIMA_SOLO_BR_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/clima_solo_br.csv";
-        
-        let map, geojsonLayer;
-        let mapCsvDataPR = [];
-        let mapCsvDataTemp = [];
-        let mapCsvDataBr = [];
-        
-        let currentMapUf = "PR";
-        let currentMapVar = "PR"; // Valores: PR, PET, TMED, KOPPEN, DTA
-
-        function initMap() {
-            if (map) return;
-            map = L.map('map').setView([-24.5, -51.0], 6); 
-            
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO'
-            }).addTo(map);
-        }
-
-        async function fetchSmart(url) {
-            try {
-                const response = await fetch(url);
-                if (response.ok) return await response.json();
-            } catch (error) { console.warn("Acesso direto falhou", error); }
-
-            try {
-                const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
-                const response = await fetch(proxyUrl);
-                if (response.ok) return await response.json();
-            } catch (error) { console.warn("Fallback 1 falhou", error); }
-
-            try {
-                const proxyUrl2 = "https://corsproxy.io/?" + encodeURIComponent(url);
-                const response = await fetch(proxyUrl2);
-                if (response.ok) return await response.json();
-            } catch (error) {
-                throw new Error("Todas as conexões falharam.");
-            }
-        }
-
-        // Função de cor para variáveis quantitativas
-        function getLinearColormap(value, vmin, vmax, isTemp) {
-            if (value === null || isNaN(value) || value === undefined) return '#dddddd';
-            if (vmax === vmin) return isTemp ? 'red' : 'blue';
-
-            let ratio = (value - vmin) / (vmax - vmin);
-            ratio = Math.max(0, Math.min(1, ratio)); 
-
-            // Cores base (Vermelho para Azul)
-            let colors = [
-                [255, 0, 0],     // Red
-                [255, 165, 0],   // Orange
-                [255, 255, 0],   // Yellow
-                [0, 255, 255],   // Cyan
-                [0, 0, 255]      // Blue
-            ];
-            
-            // Inverte as cores para temperatura (Azul para Frio, Vermelho para Quente)
-            if (isTemp) {
-                colors.reverse();
-            }
-
-            let scaled = ratio * (colors.length - 1);
-            let index = Math.floor(scaled);
-            if (index >= colors.length - 1) return `rgb(${colors[4][0]}, ${colors[4][1]}, ${colors[4][2]})`;
-
-            let remainder = scaled - index;
-            let c1 = colors[index];
-            let c2 = colors[index + 1];
-
-            let r = Math.round(c1[0] + (c2[0] - c1[0]) * remainder);
-            let g = Math.round(c1[1] + (c2[1] - c1[1]) * remainder);
-            let b = Math.round(c1[2] + (c2[2] - c1[2]) * remainder);
-
-            return `rgb(${r}, ${g}, ${b})`;
-        }
-
-        // Função de cor para a classificação categórica Köppen
-        function getKoppenColor(type) {
-            const typeLower = type.toLowerCase();
-            const colors = {
-                'af': '#0000FE',  // Equatorial húmido
-                'am': '#0077FF',  // Equatorial monçónico
-                'aw': '#46A9FA',  // Equatorial com inverno seco
-                'as': '#A9D6FB',  // Equatorial com verão seco
-                'bsh': '#F5A623', // Semiárido quente
-                'bwh': '#E69500', // Árido quente
-                'cfa': '#00FF00', // Subtropical húmido
-                'cfb': '#00C800', // Subtropical com verão temperado
-                'cwa': '#C8FF00', // Subtropical com inverno seco
-                'cwb': '#8A9E38'  // Subtropical de altitude
-            };
-            return colors[typeLower] || '#A0A0A0'; // Cor padrão caso o tipo não esteja mapeado
-        }
-
-        function normalizeMapString(str) {
-            if (!str) return "";
-            return str.toString().toUpperCase().trim()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
-        }
-
-        function loadMapCsv() {
-            updateMapStatus("A ler ficheiros climáticos...", "bg-blue-100 text-blue-800");
-
-            let loadedPR = false;
-            let loadedTemp = false;
-            let loadedBr = false;
-
-            const checkReady = () => {
-                if (loadedPR && loadedTemp && loadedBr) processMapData();
-            };
-
-            // Carrega CSV de Precipitação e ETP
-            Papa.parse(PR_PET_CSV_URL, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    mapCsvDataPR = results.data;
-                    loadedPR = true;
-                    checkReady();
-                },
-                error: function() { updateMapStatus("Erro no CSV PR/PET", "bg-red-100 text-red-800"); }
-            });
-
-            // Carrega CSV de Temperatura
-            Papa.parse(TEMP_CSV_URL, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    mapCsvDataTemp = results.data;
-                    loadedTemp = true;
-                    checkReady();
-                },
-                error: function() { updateMapStatus("Erro no CSV Temperatura", "bg-red-100 text-red-800"); }
-            });
-
-            // Carrega CSV do Brasil (Köppen e DTA)
-            Papa.parse(CLIMA_SOLO_BR_CSV_URL, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    mapCsvDataBr = results.data;
-                    loadedBr = true;
-                    checkReady();
-                },
-                error: function() { updateMapStatus("Erro no CSV Brasil", "bg-red-100 text-red-800"); }
-            });
-        }
-
-        async function processMapData() {
-            let isTemp = false;
-            let isCategorical = false;
-            let varNameLabel = '';
-            let unit = '';
-            
-            if (currentMapVar === 'PR') { varNameLabel = 'Precipitação'; unit = 'mm'; }
-            else if (currentMapVar === 'PET') { varNameLabel = 'Evapotranspiração'; unit = 'mm'; }
-            else if (currentMapVar === 'TMED') { varNameLabel = 'Temperatura Média'; unit = '°C'; isTemp = true; }
-            else if (currentMapVar === 'KOPPEN') { varNameLabel = 'Classificação Köppen'; unit = ''; isCategorical = true; }
-            else if (currentMapVar === 'DTA') { varNameLabel = 'Disp. de Água (DTA)'; unit = 'mm/m'; }
-
-            updateMapStatus(`A sintetizar ${varNameLabel} em ${currentMapUf}...`, "bg-blue-100 text-blue-800");
-
-            const mapDataMap = new Map();
-            let uniqueCategories = new Set();
-            let minVal = Infinity, maxVal = -Infinity;
-
-            if (currentMapVar === 'TMED') {
-                // Lógica para Temperatura Média
-                const meses = ["jan","fev","mar","abr","maio","jun","jul","ago","set","out","nov","dez"];
-                mapCsvDataTemp.forEach(row => {
-                    const { kEst, kMun } = getGeographicKeys(row);
-                    if (!kEst || !kMun || row[kEst].trim().toUpperCase() !== currentMapUf.toUpperCase()) return;
-
-                    let sum = 0;
-                    let count = 0;
-                    for (let m of meses) {
-                        const col = `T_${m}`;
-                        const valFloat = parseBrazilianFloat(row[col]);
-                        if (!isNaN(valFloat)) {
-                            sum += valFloat;
-                            count++;
-                        }
-                    }
-                    if (count > 0) {
-                        const mean = sum / count;
-                        const name = normalizeMapString(row[kMun]);
-                        mapDataMap.set(name, mean);
-                        if (mean < minVal) minVal = mean;
-                        if (mean > maxVal) maxVal = mean;
-                    }
-                });
-            } else if (currentMapVar === 'KOPPEN' || currentMapVar === 'DTA') {
-                // Lógica para Köppen ou DTA
-                mapCsvDataBr.forEach(row => {
-                    const { kEst, kMun } = getGeographicKeys(row);
-                    if (!kEst || !kMun || row[kEst].trim().toUpperCase() !== currentMapUf.toUpperCase()) return;
-
-                    const name = normalizeMapString(row[kMun]);
-                    
-                    if (isCategorical) {
-                        // Procura dinâmica pela coluna Köppen
-                        const keyKoppen = Object.keys(row).find(k => k.toLowerCase().includes('ppen') || k.toLowerCase().includes('koppen') || k.toLowerCase().includes('köppen'));
-                        const valRaw = keyKoppen ? row[keyKoppen] : null;
-                        
-                        if (valRaw && valRaw.trim() !== '') {
-                            let valCat = valRaw.trim();
-                            valCat = valCat.charAt(0).toUpperCase() + valCat.slice(1).toLowerCase();
-                            if (valCat === 'Bsh') valCat = 'BSh';
-                            if (valCat === 'Bwh') valCat = 'BWh';
-                            
-                            mapDataMap.set(name, valCat);
-                            uniqueCategories.add(valCat);
-                        }
-                    } else {
-                        // Procura dinâmica pela coluna DTA
-                        const keyDTA = Object.keys(row).find(k => k.toLowerCase().includes('dta'));
-                        const valRaw = keyDTA ? row[keyDTA] : null;
-                        
-                        const valFloat = parseBrazilianFloat(valRaw);
-                        if (!isNaN(valFloat)) {
-                            mapDataMap.set(name, valFloat);
-                            if (valFloat < minVal) minVal = valFloat;
-                            if (valFloat > maxVal) maxVal = valFloat;
-                        }
-                    }
-                });
-            } else {
-                // Lógica para Precipitação ou ETP
-                const prefix = currentMapVar === 'PR' ? 'PR_' : 'PET_';
-                mapCsvDataPR.forEach(row => {
-                    const { kEst, kMun } = getGeographicKeys(row);
-                    if (!kEst || !kMun || row[kEst].trim().toUpperCase() !== currentMapUf.toUpperCase()) return;
-
-                    let sum = 0;
-                    let hasData = false;
-                    for (let i = 1; i <= 12; i++) {
-                        const col = `${prefix}${i.toString().padStart(2, '0')}`;
-                        const valFloat = parseBrazilianFloat(row[col]);
-                        if (!isNaN(valFloat)) {
-                            sum += valFloat;
-                            hasData = true;
-                        }
-                    }
-                    if (hasData) {
-                        const name = normalizeMapString(row[kMun]);
-                        mapDataMap.set(name, sum);
-                        if (sum < minVal) minVal = sum;
-                        if (sum > maxVal) maxVal = sum;
-                    }
-                });
-            }
-
-            // Fallback limits se os dados estiverem vazios numericamente
-            if (!isCategorical && minVal === Infinity) { minVal = 0; maxVal = isTemp ? 40 : 1000; }
-
-            try {
-                updateMapStatus("A procurar Base IBGE...", "bg-yellow-100 text-yellow-800");
-
-                const locUrl = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${currentMapUf}/municipios`;
-                const locData = await fetchSmart(locUrl);
-                
-                const idToName = new Map();
-                const idToOriginalName = new Map();
-                
-                locData.forEach(m => {
-                    idToName.set(m.id.toString().substring(0, 6), normalizeMapString(m.nome));
-                    idToName.set(m.id.toString(), normalizeMapString(m.nome));
-                    idToOriginalName.set(m.id.toString().substring(0, 6), m.nome);
-                    idToOriginalName.set(m.id.toString(), m.nome);
-                });
-
-                const geoUrl = `https://servicodados.ibge.gov.br/api/v3/malhas/estados/${currentMapUf}?formato=application/vnd.geo+json&qualidade=minima&intrarregiao=municipio`;
-                const geoData = await fetchSmart(geoUrl);
-
-                if (geojsonLayer) map.removeLayer(geojsonLayer);
-
-                geojsonLayer = L.geoJson(geoData, {
-                    style: function(feature) {
-                        const codarea = feature.properties.codarea || "";
-                        const mName = idToName.get(codarea) || "";
-                        const valor = mapDataMap.has(mName) ? mapDataMap.get(mName) : null;
-                        
-                        let fillColor = '#dddddd';
-                        if (valor !== null) {
-                            fillColor = isCategorical ? getKoppenColor(valor) : getLinearColormap(valor, minVal, maxVal, isTemp);
-                        }
-
-                        return {
-                            fillColor: fillColor,
-                            color: 'black',
-                            weight: 0.4,
-                            fillOpacity: 0.8,
-                            opacity: 1
-                        };
-                    },
-                    onEachFeature: function(feature, layer) {
-                        const codarea = feature.properties.codarea || "";
-                        const mName = idToName.get(codarea) || "";
-                        const originalName = idToOriginalName.get(codarea) || "Desconhecido";
-                        const valor = mapDataMap.has(mName) ? mapDataMap.get(mName) : null;
-                        
-                        let displayVal = 'Sem dados';
-                        if (valor !== null) {
-                            displayVal = isCategorical ? valor : valor.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 3}) + (unit ? ' ' + unit : '');
-                        }
-
-                        const tooltipContent = `
-                            <div style="text-align: left;">
-                                <b style="color: #047857;">Município:</b> ${originalName}<br>
-                                <b style="color: #047857;">${varNameLabel}:</b> ${displayVal}
-                            </div>
-                        `;
-                        layer.bindTooltip(tooltipContent, { sticky: true, className: 'custom-tooltip' });
-                    }
-                }).addTo(map);
-
-                map.fitBounds(geojsonLayer.getBounds());
-                updateMapLegend(minVal, maxVal, varNameLabel, unit, isTemp, isCategorical, uniqueCategories);
-                
-                updateMapStatus(`Mapa ${currentMapUf} renderizado com sucesso!`, "bg-green-100 text-green-800");
-
-            } catch (err) {
-                console.error("Erro fatal map:", err);
-                updateMapStatus("Erro de Acesso na Rede", "bg-red-100 text-red-800");
-            }
-        }
-
-        function updateMapLegend(min, max, varNameLabel, unit, isTemp, isCategorical, categories) {
-            const legendContainer = document.querySelector('.legend-control');
-            if (legendContainer) legendContainer.remove();
-            
-            const legend = L.control({position: 'topright'});
-            legend.onAdd = function (map) {
-                const div = L.DomUtil.create('div', 'info-map legend-map legend-control');
-                
-                if (isCategorical) {
-                    // Legenda Categórica (Quadrados de Cor + Texto)
-                    let catHtml = '';
-                    Array.from(categories).sort().forEach(cat => {
-                        catHtml += `
-                            <div style="display: flex; align-items: center; margin-bottom: 4px;">
-                                <div style="width: 14px; height: 14px; background: ${getKoppenColor(cat)}; border: 1px solid #333; margin-right: 6px; border-radius: 2px;"></div>
-                                <span>${cat}</span>
-                            </div>
-                        `;
-                    });
-
-                    div.innerHTML = `
-                        <div style="font-weight: bold; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #047857;">${varNameLabel}<br>${currentMapUf}</div>
-                        <div class="legend-labels text-slate-600" style="height: auto;">
-                            ${catHtml}
-                        </div>
-                    `;
-                } else {
-                    // Legenda Numérica (Gradiente)
-                    const gradient = isTemp 
-                        ? "linear-gradient(to bottom, red, orange, yellow, cyan, blue)" 
-                        : "linear-gradient(to bottom, blue, cyan, yellow, orange, red)";
-
-                    div.innerHTML = `
-                        <div style="font-weight: bold; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #047857;">${varNameLabel} (${unit})<br>${currentMapUf}</div>
-                        <div style="display: flex;">
-                            <div class="color-bar" style="background: ${gradient};"></div>
-                            <div class="legend-labels text-slate-600">
-                                <span>${max.toLocaleString('pt-BR', {maximumFractionDigits: 1})}</span>
-                                <span>${((max+min)/2).toLocaleString('pt-BR', {maximumFractionDigits: 1})}</span>
-                                <span>${min.toLocaleString('pt-BR', {maximumFractionDigits: 1})}</span>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                return div;
-            };
-            legend.addTo(map);
-        }
-
-        function updateMapStatus(text, classes) {
-            const badge = document.getElementById('map-status');
-            badge.innerText = text;
-            badge.className = `text-xs text-center py-2 px-3 rounded-lg font-bold transition-colors ${classes}`;
-        }
-
-        // ==========================================
-        // INICIALIZAÇÃO E EVENTOS
-        // ==========================================
-        document.getElementById('btn-process').addEventListener('click', processDashData);
-        document.getElementById('btn-download').addEventListener('click', downloadCSV);
-        
-        document.getElementById('stateSelect').addEventListener('change', (e) => {
-            currentMapUf = e.target.value;
-            processMapData();
-        });
-
-        // Evento para a mudança da variável
-        document.getElementById('varSelect').addEventListener('change', (e) => {
-            currentMapVar = e.target.value;
-            processMapData();
-        });
-
-        window.onload = () => { 
-            initIcons(); 
-            loadDashData(); 
-        };
-    </script>
 </body>
 </html>
