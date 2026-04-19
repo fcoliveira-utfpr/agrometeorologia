@@ -1,151 +1,144 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GAMBITEC Data SH</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAMBITEC Data SH</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<style>
-body { font-family: Arial, sans-serif; }
-.chart-container { height: 300px; }
-</style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { height: 300px; }
+        #map { height: 650px; }
+    </style>
 </head>
 
-<body class="bg-gray-50 p-6">
+<body class="bg-slate-50">
 
-<h1 class="text-2xl font-bold mb-4">GAMBITEC Data SH</h1>
+<header class="bg-emerald-800 text-white p-6">
+    <h1 class="text-2xl font-bold">GAMBITEC Data SH</h1>
 
-<!-- NAV -->
-<div class="mb-6 flex gap-2">
-    <button id="btn-nav-dash" class="bg-green-600 text-white px-4 py-2 rounded">Dashboard</button>
-    <button id="btn-nav-map" class="bg-gray-300 px-4 py-2 rounded">Mapa</button>
-    <button id="btn-nav-nasa" onclick="window.location.href='index2.html';" class="bg-gray-300 px-4 py-2 rounded">NASA</button>
-</div>
+    <div class="flex gap-2 mt-4">
+        <button id="btn-nav-dash" onclick="switchView('dashboard')" class="bg-emerald-900 px-4 py-2 rounded">SIMEPAR</button>
+        <button id="btn-nav-map" onclick="switchView('map')" class="bg-emerald-900 px-4 py-2 rounded">Mapa</button>
+        <button id="btn-nav-nasa" onclick="window.location.href='index2.html';" class="bg-emerald-900 px-4 py-2 rounded">NASA</button>
+    </div>
+</header>
 
-<!-- FILTRO -->
-<div class="mb-4 flex gap-2">
-    <input id="date-start" type="text" placeholder="Data inicial" class="border p-2 rounded">
-    <input id="date-end" type="text" placeholder="Data final" class="border p-2 rounded">
-    <button id="btn-process" class="bg-blue-600 text-white px-4 rounded">Filtrar</button>
-</div>
+<main id="view-dashboard" class="p-6">
 
-<!-- STATS -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <div>Precip: <span id="stat-precip">0</span></div>
-    <div>Temp: <span id="stat-temp">0</span></div>
-    <div>UR: <span id="stat-umid">0</span></div>
-    <div>Dias: <span id="stat-days">0</span></div>
-</div>
+    <div class="flex gap-2 mb-4">
+        <input id="date-start" type="date" class="border p-2 rounded">
+        <input id="date-end" type="date" class="border p-2 rounded">
+        <button id="btn-process" class="bg-green-600 text-white px-4 rounded">Filtrar</button>
+    </div>
 
-<!-- GRÁFICO -->
-<div class="chart-container mb-6">
-    <canvas id="precipChart"></canvas>
-</div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div>Precip: <span id="stat-precip">0</span></div>
+        <div>Temp: <span id="stat-temp">0</span></div>
+        <div>UR: <span id="stat-umid">0</span></div>
+        <div>Dias: <span id="stat-days">0</span></div>
+    </div>
 
-<!-- TABELA -->
-<table class="w-full text-sm border">
-<thead class="bg-gray-200">
-<tr>
-<th>Data</th><th>Tmax</th><th>Tmin</th><th>Tmed</th><th>UR</th><th>Chuva</th>
-</tr>
-</thead>
-<tbody id="data-table-body"></tbody>
-</table>
+    <div class="chart-container mb-6">
+        <canvas id="precipChart"></canvas>
+    </div>
+
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th>Data</th><th>Tmax</th><th>Tmin</th><th>Tmed</th><th>UR</th><th>Chuva</th>
+            </tr>
+        </thead>
+        <tbody id="data-table-body"></tbody>
+    </table>
+
+</main>
 
 <script>
+
 const CSV_URL = 'https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/SIMEPAR_dados_diario.csv';
 
 let fullData = [];
 let filteredData = [];
 let chart;
 
-// ==========================
+// =========================
 // FUNÇÕES SEGURAS
-// ==========================
-function safeNumber(val){
-    const n = parseFloat(val);
-    return isNaN(n) ? null : n;
+// =========================
+function parseBrazilianFloat(val) {
+    if (!val) return NaN;
+    return parseFloat(val.toString().replace(',', '.'));
 }
 
-function safeToFixed(val){
-    return (val === null || isNaN(val)) ? '-' : val.toFixed(1);
+function safe(v){
+    return isNaN(v) ? '-' : v.toFixed(1);
 }
 
-// ==========================
-// PARSER ROBUSTO
-// ==========================
-function parseRow(row){
-    const get = (terms)=>{
+// =========================
+// PARSER
+// =========================
+function mapRow(row){
+    const findVal = (terms)=>{
         const key = Object.keys(row).find(k =>
             terms.some(t => k.toLowerCase().includes(t))
         );
-        return key ? safeNumber(row[key].replace(',', '.')) : null;
+        return key ? parseBrazilianFloat(row[key]) : NaN;
     };
 
     return {
         date: new Date(row['Data']),
         dateStr: row['Data'],
-        tmax: get(['tmax']),
-        tmin: get(['tmin']),
-        tmed: get(['tmed']),
-        umid: get(['ur']),
-        precip: get(['chuva'])
+        tmax: findVal(['tmax']),
+        tmin: findVal(['tmin']),
+        tmed: findVal(['tmed']),
+        umid: findVal(['ur']),
+        precip: findVal(['chuva']),
+        rad: findVal(['radiação','radiacao','rad'])
     };
 }
 
-// ==========================
-// LOAD CSV
-// ==========================
+// =========================
+// LOAD
+// =========================
 async function loadData(){
     const res = await fetch(CSV_URL);
     const text = await res.text();
 
     Papa.parse(text, {
         header:true,
-        complete: function(results){
-            fullData = results.data.map(parseRow).filter(d => d.date);
+        complete: (results)=>{
+            fullData = results.data.map(mapRow).filter(d=>d.date);
             fullData.sort((a,b)=>a.date-b.date);
 
-            initDatePicker();
+            document.getElementById('date-start').value = fullData[0].date.toISOString().split('T')[0];
+            document.getElementById('date-end').value = fullData[fullData.length-1].date.toISOString().split('T')[0];
+
             processData();
         }
     });
 }
 
-// ==========================
-// DATE PICKER
-// ==========================
-function initDatePicker(){
-    flatpickr("#date-start", {
-        locale:"pt",
-        dateFormat:"Y-m-d",
-        defaultDate: fullData[0].date
-    });
-
-    flatpickr("#date-end", {
-        locale:"pt",
-        dateFormat:"Y-m-d",
-        defaultDate: fullData[fullData.length-1].date
-    });
-}
-
-// ==========================
-// PROCESSAMENTO
-// ==========================
+// =========================
+// PROCESS
+// =========================
 function processData(){
     const ds = document.getElementById('date-start').value;
     const de = document.getElementById('date-end').value;
 
     if(!ds || !de){
-        alert("Selecione as datas!");
+        alert("Selecione o período");
         return;
     }
 
@@ -158,66 +151,54 @@ function processData(){
     updateChart();
 }
 
-// ==========================
+// =========================
 // UI
-// ==========================
+// =========================
 function updateUI(){
     const tbody = document.getElementById('data-table-body');
 
-    if(filteredData.length === 0){
-        tbody.innerHTML = "<tr><td colspan='6'>Sem dados</td></tr>";
-        return;
-    }
+    const sum = k => filteredData.reduce((a,b)=>a+(isNaN(b[k])?0:b[k]),0);
+    const avg = k => sum(k)/filteredData.length;
 
-    const sum = key => filteredData.reduce((a,b)=>a+(b[key]||0),0);
-    const avg = key => sum(key)/filteredData.length;
-
-    document.getElementById('stat-precip').innerText = safeToFixed(sum('precip'));
-    document.getElementById('stat-temp').innerText = safeToFixed(avg('tmed'));
-    document.getElementById('stat-umid').innerText = safeToFixed(avg('umid'));
+    document.getElementById('stat-precip').innerText = safe(sum('precip'));
+    document.getElementById('stat-temp').innerText = safe(avg('tmed'));
+    document.getElementById('stat-umid').innerText = safe(avg('umid'));
     document.getElementById('stat-days').innerText = filteredData.length;
 
     tbody.innerHTML = filteredData.map(d=>`
         <tr>
             <td>${d.dateStr}</td>
-            <td>${safeToFixed(d.tmax)}</td>
-            <td>${safeToFixed(d.tmin)}</td>
-            <td>${safeToFixed(d.tmed)}</td>
-            <td>${safeToFixed(d.umid)}</td>
-            <td>${safeToFixed(d.precip)}</td>
+            <td>${safe(d.tmax)}</td>
+            <td>${safe(d.tmin)}</td>
+            <td>${safe(d.tmed)}</td>
+            <td>${safe(d.umid)}</td>
+            <td>${safe(d.precip)}</td>
         </tr>
     `).join('');
 }
 
-// ==========================
-// GRÁFICO
-// ==========================
+// =========================
+// CHART
+// =========================
 function updateChart(){
-    const labels = filteredData.map(d=>d.dateStr);
-
     if(chart) chart.destroy();
 
     chart = new Chart(document.getElementById('precipChart'), {
         type:'bar',
         data:{
-            labels:labels,
-            datasets:[
-                {
-                    label:'Chuva',
-                    data: filteredData.map(d=>d.precip)
-                }
-            ]
+            labels: filteredData.map(d=>d.dateStr),
+            datasets:[{
+                label:'Chuva',
+                data: filteredData.map(d=>d.precip)
+            }]
         }
     });
 }
 
-// ==========================
-// EVENTOS
-// ==========================
+// =========================
 document.getElementById('btn-process').addEventListener('click', processData);
-
-// ==========================
 loadData();
+
 </script>
 
 </body>
