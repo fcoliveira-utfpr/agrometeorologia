@@ -437,18 +437,37 @@
                             dashFullData.sort((a, b) => a.dateObj - b.dateObj);
                             
                             // Define a data inicial padrão como 01/01/2026 (formato YYYY-MM-DD)
+                            // Define a data inicial padrão como 01/01/2026 (formato YYYY-MM-DD)
                             const first = '2026-01-01'; 
-                            
                             const last = dashFullData[dashFullData.length - 1].dateObj.toISOString().split('T')[0];
                             
-                            document.getElementById('date-start').value = first;
-                            document.getElementById('date-end').value = last;
+                            // APAGUE OU COMENTE ESTAS DUAS LINHAS:
+                            // document.getElementById('date-start').value = first;
+                            // document.getElementById('date-end').value = last;
+                            
+                            // ==========================================
+                            // INSIRA A CONFIGURAÇÃO DO FLATPICKR AQUI:
+                            // ==========================================
+                            const flatpickrConfig = {
+                                locale: "pt", 
+                                dateFormat: "Y-m-d", 
+                                altInput: true, 
+                                altFormat: "d/m/Y", 
+                                // Mantenha as classes CSS que você já usava nos seus inputs originais aqui:
+                                altInputClass: "w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-slate-700"
+                            };
+                            
+                            flatpickr("#date-start", { ...flatpickrConfig, defaultDate: first });
+                            flatpickr("#date-end", { ...flatpickrConfig, defaultDate: last });
+                            // ==========================================
                             
                             processDashData();
                             
                             if (loading) {
                                 loading.style.opacity = '0';
                                 setTimeout(() => loading.style.display = 'none', 500);
+                            }
+                            //
                             }
                         }
                     }
@@ -459,6 +478,7 @@
                 if (loading) loading.style.display = 'none';
             }
         }
+        //aqui
 
         function processDashData() {
             const ds = document.getElementById('date-start').value;
