@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAMBITEC Data SH</title>
+    <title>GAMBITEC Data - NASA-POWER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Flatpickr para formatação de datas (Dia/Mês/Ano) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -32,7 +36,7 @@
             <div>
                 <h1 class="text-2xl font-bold flex items-center">
                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    GAMBITEC Data SH
+                    GAMBITEC Data - NASA-POWER
                 </h1>
                 <p class="text-emerald-200 text-sm mt-1">Monitoramento Agrometeorológico</p>
             </div>
@@ -87,11 +91,11 @@
                 <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data de Início</label>
-                        <input type="date" id="startDate" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+                        <input type="text" id="startDate" class="w-full p-2 border border-slate-300 rounded-lg bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-slate-700" placeholder="DD/MM/AAAA">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data de Fim</label>
-                        <input type="date" id="endDate" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+                        <input type="text" id="endDate" class="w-full p-2 border border-slate-300 rounded-lg bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-slate-700" placeholder="DD/MM/AAAA">
                     </div>
                     
                     <div class="sm:col-span-2 flex gap-3 mt-2">
@@ -318,12 +322,21 @@
         // Iniciar o carregamento do CSV assim que o script iniciar
         loadLocations();
 
-        // Configuração inicial de datas (últimos 30 dias)
+        // Configuração inicial de datas (últimos 30 dias) e inicialização do Flatpickr
         const today = new Date();
         const start = new Date();
         start.setDate(today.getDate() - 30);
-        document.getElementById('startDate').value = start.toISOString().split('T')[0];
-        document.getElementById('endDate').value = today.toISOString().split('T')[0];
+        
+        const flatpickrConfig = {
+            locale: "pt", // Idioma Português
+            dateFormat: "Y-m-d", // Formato em que o JS lê o valor (escondido)
+            altInput: true, // Cria um campo visual extra
+            altFormat: "d/m/Y", // Formato Visual: Dia/Mês/Ano
+            altInputClass: "w-full p-2 border border-slate-300 rounded-lg bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-slate-700"
+        };
+
+        flatpickr("#startDate", { ...flatpickrConfig, defaultDate: start });
+        flatpickr("#endDate", { ...flatpickrConfig, defaultDate: today });
 
         // Lógica de Processamento da NASA API
         async function runAgroProcess() {
@@ -413,7 +426,7 @@
                 const eto = Math.max(0, eto_num / eto_den);
 
                 processedRows.push({
-                    data_str: `${d}/${m}/${y}`,
+                    data_str: `${d}/${m}/${y}`, // Formato Dia/Mês/Ano visualizado na tabela
                     data_iso: `${y}-${m}-${d}`,
                     tmin: parseFloat(tmin.toFixed(1)),
                     tmed: parseFloat(tmed.toFixed(1)),
