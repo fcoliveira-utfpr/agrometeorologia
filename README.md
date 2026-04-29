@@ -40,9 +40,6 @@ Ao final do Curso, discentes são capazes de avaliar o efeito de elementos clim�
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/01_dados_nasapower.ipynb)
 
-<a href="https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/01_dados_nasapower.ipynb" target="_blank">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
-</a>
 
 **Objetivo:**  
 Obter dados meteorológicos da base [**NASA/POWER**](https://power.larc.nasa.gov/) por município.
