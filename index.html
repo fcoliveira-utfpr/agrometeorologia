@@ -586,13 +586,12 @@
                 const idToOriginalName = new Map();
                 
                 locData.forEach(m => {
-                    idToName.set(m.id.toString().substring(0, 6), normalizeMapString(m.nome));
-                    idToName.set(m.id.toString(), normalizeMapString(m.nome));
-                    idToOriginalName.set(m.id.toString().substring(0, 6), m.nome);
-                    idToOriginalName.set(m.id.toString(), m.nome);
+                    const id7 = m.id.toString();
+                    idToName.set(id7, normalizeMapString(m.nome));
+                    idToOriginalName.set(id7, m.nome);
                 });
 
-                const geoUrl = `https://servicodados.ibge.gov.br/api/v3/malhas/estados/${currentMapUf}?formato=application/vnd.geo+json&qualidade=minima&intrarregiao=municipio`;
+                const geoUrl = `https://servicodados.ibge.gov.br/api/v3/malhas/estados/${currentMapUf}?formato=application/vnd.geo+json&resolucao=5`;
                 const geoData = await fetchSmart(geoUrl);
 
                 if (geojsonLayer) map.removeLayer(geojsonLayer);
