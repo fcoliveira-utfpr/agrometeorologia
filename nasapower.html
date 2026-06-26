@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
@@ -215,6 +215,36 @@
             rad: null,
             rh: null
         };
+        const PY_LOCATIONS = [
+            {municipio:"Asunción",      estado:"Paraguai (PY)", lat:-25.2867, lon:-57.6470, alt:53},
+            {municipio:"Caacupé",       estado:"Paraguai (PY)", lat:-25.3869, lon:-57.1428, alt:260},
+            {municipio:"Caaguazú",      estado:"Paraguai (PY)", lat:-25.4351, lon:-56.0167, alt:200},
+            {municipio:"Caazapá",       estado:"Paraguai (PY)", lat:-26.1953, lon:-56.3726, alt:190},
+            {municipio:"Capiatá",       estado:"Paraguai (PY)", lat:-25.3500, lon:-57.4333, alt:160},
+            {municipio:"Ciudad del Este",   estado:"Paraguai (PY)", lat:-25.5097, lon:-54.6119, alt:176},
+            {municipio:"Concepción",    estado:"Paraguai (PY)", lat:-23.4064, lon:-57.4345, alt:95},
+            {municipio:"Coronel Oviedo",    estado:"Paraguai (PY)", lat:-25.4473, lon:-56.4500, alt:200},
+            {municipio:"Encarnación",   estado:"Paraguai (PY)", lat:-27.3306, lon:-55.8655, alt:89},
+            {municipio:"Fernando de la Mora",estado:"Paraguai (PY)",lat:-25.3333, lon:-57.5167, alt:115},
+            {municipio:"Filadelfia",        estado:"Paraguai (PY)", lat:-22.3500, lon:-60.0333, alt:110},
+            {municipio:"Fuerte Olimpo",     estado:"Paraguai (PY)", lat:-21.0411, lon:-57.8747, alt:95},
+            {municipio:"Itauguá",       estado:"Paraguai (PY)", lat:-25.3833, lon:-57.3500, alt:200},
+            {municipio:"Lambaré",       estado:"Paraguai (PY)", lat:-25.3485, lon:-57.6133, alt:95},
+            {municipio:"Limpio",            estado:"Paraguai (PY)", lat:-25.1600, lon:-57.4700, alt:130},
+            {municipio:"Luque",             estado:"Paraguai (PY)", lat:-25.2649, lon:-57.4870, alt:190},
+            {municipio:"Mariano Roque Alonso",estado:"Paraguai (PY)",lat:-25.1833,lon:-57.5333, alt:88},
+            {municipio:"Paraguari",         estado:"Paraguai (PY)", lat:-25.6189, lon:-57.1489, alt:150},
+            {municipio:"Pedro Juan Caballero",estado:"Paraguai (PY)",lat:-22.5455,lon:-55.7361, alt:620},
+            {municipio:"Pilar",             estado:"Paraguai (PY)", lat:-26.8614, lon:-58.3053, alt:70},
+            {municipio:"Salto del Guairá",estado:"Paraguai (PY)",lat:-24.0660,lon:-54.3069, alt:360},
+            {municipio:"San Juan Bautista", estado:"Paraguai (PY)", lat:-26.6667, lon:-57.1333, alt:80},
+            {municipio:"San Lorenzo",       estado:"Paraguai (PY)", lat:-25.3401, lon:-57.5083, alt:117},
+            {municipio:"San Pedro de Ycuamandiyú",estado:"Paraguai (PY)",lat:-24.1000,lon:-57.0750,alt:100},
+            {municipio:"Villa Elisa",       estado:"Paraguai (PY)", lat:-25.3667, lon:-57.5833, alt:110},
+            {municipio:"Villa Hayes",       estado:"Paraguai (PY)", lat:-25.0961, lon:-57.5597, alt:60},
+            {municipio:"Villarrica",        estado:"Paraguai (PY)", lat:-25.7500, lon:-56.4333, alt:180}
+        ];
+
         let locationData = [];
 
         // Carregar dados geográficos do CSV remoto
@@ -254,6 +284,7 @@
                     }
                 }
 
+                PY_LOCATIONS.forEach(loc => locationData.push(loc));
                 populateStates();
             } catch (error) {
                 console.error("Erro ao carregar locais:", error);
