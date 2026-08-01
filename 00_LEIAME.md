@@ -1,5 +1,7 @@
 # 🌱 Agrometeorologia Aplicada com Python
 
+![Visitor Count](https://komarev.com/ghpvc/?username=fcoliveira-utfpr&repo=agrometeorologia&label=Visitas&color=0e75b6&style=flat)
+
 Este repositório reúne notebooks didáticos utilizados na área de **Agrometeorologia**, com foco na análise de dados climáticos, caracterização clima–solo–cultura e aplicação em balanço hídrico agrícola, utilizando **Python no Google Colab** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fcoliveira-utfpr/agrometeorologia/blob/main/exemplo_notebook.ipynb)
 
 Os notebooks foram desenvolvidos com abordagem prática, utilizando dados reais e exemplos aplicados à agricultura brasileira.
@@ -17,6 +19,15 @@ OLIVEIRA, Fabricio Correia de. Agrometeorologia: v. 1.0. Zenodo, 2026. DOI: 10.5
 ## 🎯 Objetivos da disciplina
 
 Ao final do Curso, discentes são capazes de avaliar o efeito de elementos climáticos e meteorológicos sobre o planejamento de uso da terra e das operações agrícolas e pecuárias, relacionando informações de tempo e clima com os sistemas de produção agropecuária, com decisões sustentáveis e inovadoras. 
+
+---
+
+## 🧰 Ferramentas relacionadas
+
+Este repositório é o material didático da disciplina. Duas ferramentas complementares, também de autoria do professor, dão suporte aos cálculos e aos dados climáticos usados aqui:
+
+- **[agrometeorologiapy](https://github.com/fcoliveira-utfpr/agrometeorologiapy)** ([PyPI](https://pypi.org/project/agrometeorologiapy/)): pacote Python com as fórmulas de agrometeorologia usadas nos notebooks — radiação solar, evapotranspiração (Thornthwaite, Camargo-Maluf, Hargreaves-Samani, Priestley-Taylor, Penman-Monteith FAO-56), grau-dias e balanço hídrico —, documentadas e testadas. É a implementação usada a partir dos notebooks `01`, `05` e `06`.
+- **[climas_brasil](https://github.com/fcoliveira-utfpr/climas_brasil)**: classificação climática (Köppen-Geiger, Camargo, Thornthwaite) por município brasileiro, calculada de forma consistente a partir do TerraClimate (normais 1991-2020). É a fonte das colunas `Köppen`, `Camargo` e `Thornthwaite` em `clima_solo_br.csv`/`clima_solo_local.csv`.
 
 ---
 
@@ -187,7 +198,7 @@ Baixar dados meteorológicos para Santa Helena - PR.
 ### 🔹 EXTRA 2. Base de dados utilizados na aplicação
 
 - [Atlas Irrigação, 2021](https://metadados.snirh.gov.br/geonetwork/srv/api/records/1b19cbb4-10fa-4be4-96db-b3dcd8975db0)
-- [Alvares et al. (2013)](https://www.schweizerbart.de/papers/metz/detail/22/82078/Koppen_s_climate_classification_map_for_Brazil?af=crossref)
+- [climas_brasil](https://github.com/fcoliveira-utfpr/climas_brasil): classificação Köppen-Geiger, Camargo e Thornthwaite por município (TerraClimate, normais 1991-2020) — substitui a classificação de [Alvares et al. (2013)](https://www.schweizerbart.de/papers/metz/detail/22/82078/Koppen_s_climate_classification_map_for_Brazil?af=crossref), usada em versões anteriores deste repositório
 - [NASA/POWER](https://power.larc.nasa.gov/)
 - [INMET](https://portal.inmet.gov.br/)
 - [SIMEPAR](https://www.simepar.br/)
