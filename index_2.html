@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAMBITEC Data</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PapaParse -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        .chart-container { height: 300px; position: relative; }
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        /* Estilos do Mapa */
+        #map { height: 650px; width: 100%; border-radius: 8px; z-index: 1; }
+        .info-map {
+            padding: 8px 12px;
+            font: 14px/16px 'Inter', sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        .legend-map {
+            line-height: 24px;
+            color: #333;
+        }
+        .legend-map .color-bar {
+            width: 20px;
+            height: 100px;
+            float: left;
+            margin-right: 10px;
+            border: 1px solid #333;
+            background: linear-gradient(to bottom, blue, cyan, yellow, orange, red);
+            border-radius: 4px;
+        }
+        .legend-labels {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .custom-tooltip {
+            background: white;
+            border: 1px solid #10b981;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        
+        /* Estado ativo da navegação */
+        .nav-active {
+            background-color: #047857 !important; /* emerald-700 */
+            border-color: #047857 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <!-- Ecrã de Carregamento -->
+    <div id="loading-screen" class="loading-overlay">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600 mb-4"></div>
+        <h2 class="text-xl font-bold text-emerald-800">GAMBITEC Data</h2>
+        <p class="text-slate-500 animate-pulse" id="loading-text">A sincronizar dados...</p>
+    </div>
+
+    <!-- Cabeçalho com Navegação -->
+    <header class="bg-emerald-800 text-white p-4 md:p-6 shadow-lg sticky top-0 z-50 relative">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i data-lucide="leaf" class="w-10 h-10 text-emerald-300"></i>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">GAMBITEC Data</h1>
+                    <p class="text-emerald-100 text-sm opacity-90 hidden sm:block">Monitoramento Agrometeorológico</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 bg-emerald-900/50 px-4 py-2 rounded-full border border-emerald-700/50">
+                    <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-200">Sistema Ativo</span>
+                </div>
+                
+                <!-- Botão Menu Hambúrguer (Tracinhos) -->
+                <button id="menu-toggle-btn" onclick="toggleMenu()" class="p-2 px-4 bg-emerald-900 border border-emerald-700 rounded-xl text-emerald-100 hover:bg-emerald-700 transition-all focus:outline-none flex items-center gap-2">
+                    <span class="hidden sm:block text-sm font-bold">MENU</span>
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Dropdown Moderno -->
+        <div id="main-menu" class="hidden absolute top-full right-4 md:right-8 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform origin-top-right transition-all z-[100]">
+            <div class="p-2 flex flex-col gap-1">
+                <button onclick="switchMenu('map')" class="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 rounded-xl transition-colors flex items-center gap-3 font-semibold">
+                    <i data-lucide="map" class="w-5 h-5"></i> Normais Climatológicas
+                </button>
+                <button onclick="window.location.href='previsao.html';" class="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 rounded-xl transition-colors flex items-center gap-3 font-semibold">
+                    <i data-lucide="cloud-sun" class="w-5 h-5"></i> Previsão do Tempo
+                </button>   
+                <button onclick="window.location.href='setedias.html';" class="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 rounded-xl transition-colors flex items-center gap-3 font-semibold">
+                    <i data-lucide="calendar-days" class="w-5 h-5"></i> Monitoramento 7 dias
+                </button>
+                <button onclick="window.location.href='nasapower.html';" class="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 rounded-xl transition-colors flex items-center gap-3 font-semibold">
+                    <i data-lucide="satellite" class="w-5 h-5"></i> Dados NASA-POWER
+                </button>
+                <button onclick="window.location.href='simeparsh.html';" class="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 rounded-xl transition-colors flex items-center gap-3 font-semibold">
+                    <i data-lucide="droplets" class="w-5 h-5"></i> SIMEPAR SH
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- VISTA MAPA CLIMATOLÓGICO -->
+    <main id="view-map" class="hidden container mx-auto p-4 md:p-8 animate-fade-in">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-1 space-y-4">
+                <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-t-emerald-600">
+                    <h2 class="text-lg font-bold mb-4 text-slate-800 flex items-center gap-2 border-b pb-2">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-emerald-600"></i> Parâmetros
+                    </h2>
+                    
+                    <label class="block mb-2 text-sm font-bold text-slate-500 uppercase">Estado (UF):</label>
+                    <select id="stateSelect" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-700">
+                        <option value="AC">Acre</option>
+                        <option value="AL">Alagoas</option>
+                        <option value="AM">Amazonas</option>
+                        <option value="BA">Bahia</option>
+                        <option value="CE">Ceará</option>
+                        <option value="DF">Distrito Federal</option>
+                        <option value="ES">Espírito Santo</option>
+                        <option value="GO">Goiás</option>
+                        <option value="MA">Maranhão</option>
+                        <option value="MG">Minas Gerais</option>
+                        <option value="MS">Mato Grosso do Sul</option>
+                        <option value="MT">Mato Grosso</option>
+                        <option value="PA">Pará</option>
+                        <option value="PB">Paraíba</option>
+                        <option value="PE">Pernambuco</option>
+                        <option value="PI">Piauí</option>
+                        <option value="PR" selected>Paraná</option>
+                        <option value="RJ">Rio de Janeiro</option>
+                        <option value="RN">Rio Grande do Norte</option>
+                        <option value="RO">Rondônia</option>
+                        <option value="RR">Roraima</option>
+                        <option value="RS">Rio Grande do Sul</option>
+                        <option value="SC">Santa Catarina</option>
+                        <option value="SE">Sergipe</option>
+                        <option value="SP">São Paulo</option>
+                        <option value="TO">Tocantins</option>
+                    </select>
+
+                    <label class="block mb-2 mt-4 text-sm font-bold text-slate-500 uppercase">Variável Analisada:</label>
+                    <select id="varSelect" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-700">
+                        <option value="PR" selected>Precipitação - Chuva Acumulada</option>
+                        <option value="PET">Evapotranspiração - ETP</option>
+                        <option value="TMED">Temperatura Média Anual</option>
+                        <option value="KOPPEN">Clima - Classificação Köppen</option>
+                        <option value="DTA">Solo - Disp. Total de Água (DTA)</option>
+                    </select>
+                    
+                    <div class="mt-6 space-y-3">
+                        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                            <h4 class="text-xs font-black text-emerald-800 uppercase tracking-widest mb-1">Fonte de Dados</h4>
+                            <p class="text-xs text-emerald-600 leading-relaxed">
+                                Bases:<br>
+                                Clima Koppen (Alvares et al., 2013).<br>
+                                Normais Climatológicas de 1991-2020 (TerraClimate).<br>
+                                DTA (mm/m) (Atlas Irrigação, 2021).
+                            </p>
+                        </div>
+                        <div id="map-status" class="text-xs text-center py-2 px-3 rounded-lg font-bold bg-slate-100 text-slate-500">
+                            A aguardar inicialização...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="glass-card p-2 rounded-2xl shadow-sm border border-slate-200">
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // VARIÁVEIS GLOBAIS E CONTROLO DE ECRÃS
+        // ==========================================
+        let isMapInitialized = false;
+
+        function initIcons() { 
+            if (typeof lucide !== 'undefined') lucide.createIcons(); 
+        }
+
+        // Funções para o novo Menu de Hambúrguer
+        function toggleMenu() {
+            const menu = document.getElementById('main-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function switchMenu(viewName) {
+            toggleMenu(); // Fecha o menu após clicar numa opção
+            switchView(viewName); // Muda a vista
+        }
+
+        // Fecha o menu automaticamente se clicar em qualquer lugar fora dele
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('main-menu');
+            const btn = document.getElementById('menu-toggle-btn');
+            if (menu && !menu.classList.contains('hidden') && !menu.contains(event.target) && !btn.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // Corrigido para não falhar se botões/vistas de outros menus não existirem
+        function switchView(viewName) {
+            const viewMap = document.getElementById('view-map');
+            const btnMap = document.getElementById('btn-nav-map');
+
+            if (viewName === 'map') {
+                if(viewMap) viewMap.classList.remove('hidden');
+                if(btnMap) btnMap.classList.add('nav-active');
+                
+                if (!isMapInitialized) {
+                    setTimeout(() => {
+                        initMap();
+                        loadMapCsv();
+                        isMapInitialized = true;
+                    }, 100);
+                } else {
+                    if(map) map.invalidateSize();
+                }
+            }
+        }
+
+        // Função universal e segura para converter valores de CSV independentemente do formato
+        function parseBrazilianFloat(valRaw) {
+            if (valRaw === null || valRaw === undefined || valRaw === '') return NaN;
+            let str = valRaw.toString().trim();
+            
+            // Verifica se tem vírgula e ponto (ex: 1.234,56 ou 1,234.56)
+            if (str.includes(',') && str.includes('.')) {
+                if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
+                    // O separador decimal é a vírgula (ex: 1.234,56)
+                    str = str.replace(/\./g, '').replace(',', '.');
+                } else {
+                    // O separador decimal é o ponto (ex: 1,234.56)
+                    str = str.replace(/,/g, '');
+                }
+            } else if (str.includes(',')) {
+                // Só tem vírgula, assume que é o separador decimal (ex: 123,4)
+                str = str.replace(',', '.');
+            }
+            // Se só tiver ponto, o parseFloat processa nativamente (formato americano)
+            return parseFloat(str);
+        }
+
+        // Função dinâmica para encontrar colunas de Estado e Município protegendo contra nomes variáveis no CSV
+        const getGeographicKeys = (row) => {
+            const keys = Object.keys(row);
+            const kEst = keys.find(k => ['estado', 'uf', 'estados'].includes(k.toLowerCase().trim()));
+            const kMun = keys.find(k => {
+                const kl = k.toLowerCase().trim();
+                return kl.includes('município') || kl.includes('municipio') || kl.includes('cidade');
+            });
+            return { kEst, kMun };
+        };
+
+        // ==========================================
+        // LÓGICA DO MAPA (NORMAIS CLIMATOLÓGICAS)
+        // ==========================================
+        const PR_PET_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/terraclimate_pet_normal_brasil.csv";
+        const TEMP_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/clima_solo_local.csv";
+        const CLIMA_SOLO_BR_CSV_URL = "https://raw.githubusercontent.com/fcoliveira-utfpr/agrometeorologia/refs/heads/main/clima_solo_br.csv";
+        
+        let map, geojsonLayer;
+        let mapCsvDataPR = [];
+        let mapCsvDataTemp = [];
+        let mapCsvDataBr = [];
+        
+        let currentMapUf = "PR";
+        let currentMapVar = "PR"; // Valores: PR, PET, TMED, KOPPEN, DTA
+
+        function initMap() {
+            if (map) return;
+            map = L.map('map').setView([-24.5, -51.0], 6); 
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO'
+            }).addTo(map);
+        }
+
+        async function fetchSmart(url) {
+            try {
+                const response = await fetch(url);
+                if (response.ok) return await response.json();
+            } catch (error) { console.warn("Acesso direto falhou", error); }
+
+            try {
+                const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
+                const response = await fetch(proxyUrl);
+                if (response.ok) return await response.json();
+            } catch (error) { console.warn("Fallback 1 falhou", error); }
+
+            try {
+                const proxyUrl2 = "https://corsproxy.io/?" + encodeURIComponent(url);
+                const response = await fetch(proxyUrl2);
+                if (response.ok) return await response.json();
+            } catch (error) {
+                throw new Error("Todas as conexões falharam.");
+            }
+        }
+
+        // Função de cor para variáveis quantitativas
+        function getLinearColormap(value, vmin, vmax, isTemp) {
+            if (value === null || isNaN(value) || value === undefined) return '#dddddd';
+            if (vmax === vmin) return isTemp ? 'red' : 'blue';
+
+            let ratio = (value - vmin) / (vmax - vmin);
+            ratio = Math.max(0, Math.min(1, ratio)); 
+
+            // Cores base (Vermelho para Azul)
+            let colors = [
+                [255, 0, 0],     // Red
+                [255, 165, 0],   // Orange
+                [255, 255, 0],   // Yellow
+                [0, 255, 255],   // Cyan
+                [0, 0, 255]      // Blue
+            ];
+            
+            // Inverte as cores para temperatura (Azul para Frio, Vermelho para Quente)
+            if (isTemp) {
+                colors.reverse();
+            }
+
+            let scaled = ratio * (colors.length - 1);
+            let index = Math.floor(scaled);
+            if (index >= colors.length - 1) return `rgb(${colors[4][0]}, ${colors[4][1]}, ${colors[4][2]})`;
+
+            let remainder = scaled - index;
+            let c1 = colors[index];
+            let c2 = colors[index + 1];
+
+            let r = Math.round(c1[0] + (c2[0] - c1[0]) * remainder);
+            let g = Math.round(c1[1] + (c2[1] - c1[1]) * remainder);
+            let b = Math.round(c1[2] + (c2[2] - c1[2]) * remainder);
+
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Função de cor para a classificação categórica Köppen
+        function getKoppenColor(type) {
+            const typeLower = type.toLowerCase();
+            const colors = {
+                'af': '#0000FE',  // Equatorial húmido
+                'am': '#0077FF',  // Equatorial monçónico
+                'aw': '#46A9FA',  // Equatorial com inverno seco
+                'as': '#A9D6FB',  // Equatorial com verão seco
+                'bsh': '#F5A623', // Semiárido quente
+                'bwh': '#E69500', // Árido quente
+                'cfa': '#00FF00', // Subtropical húmido
+                'cfb': '#00C800', // Subtropical com verão temperado
+                'cwa': '#C8FF00', // Subtropical com inverno seco
+                'cwb': '#8A9E38'  // Subtropical de altitude
+            };
+            return colors[typeLower] || '#A0A0A0'; // Cor padrão caso o tipo não esteja mapeado
+        }
+
+        function normalizeMapString(str) {
+            if (!str) return "";
+            return str.toString().toUpperCase().trim()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+        }
+
+        function loadMapCsv() {
+            updateMapStatus("A ler ficheiros climáticos...", "bg-blue-100 text-blue-800");
+
+            let loadedPR = false;
+            let loadedTemp = false;
+            let loadedBr = false;
+
+            const checkReady = () => {
+                if (loadedPR && loadedTemp && loadedBr) processMapData();
+            };
+
+            // Carrega CSV de Precipitação e ETP
+            Papa.parse(PR_PET_CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    mapCsvDataPR = results.data;
+                    loadedPR = true;
+                    checkReady();
+                },
+                error: function() { 
+                    updateMapStatus("Erro no CSV PR/PET", "bg-red-100 text-red-800"); 
+                    hideLoadingScreen(); 
+                }
+            });
+
+            // Carrega CSV de Temperatura
+            Papa.parse(TEMP_CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    mapCsvDataTemp = results.data;
+                    loadedTemp = true;
+                    checkReady();
+                },
+                error: function() { 
+                    updateMapStatus("Erro no CSV Temperatura", "bg-red-100 text-red-800");
+                    hideLoadingScreen();
+                }
+            });
+
+            // Carrega CSV do Brasil (Köppen e DTA)
+            Papa.parse(CLIMA_SOLO_BR_CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    mapCsvDataBr = results.data;
+                    loadedBr = true;
+                    checkReady();
+                },
+                error: function() { 
+                    updateMapStatus("Erro no CSV Brasil", "bg-red-100 text-red-800");
+                    hideLoadingScreen();
+                }
+            });
+        }
+        
+        function hideLoadingScreen() {
+            const loader = document.getElementById('loading-screen');
+            if (loader) loader.style.display = 'none';
+        }
+
+        async function processMapData() {
+            let isTemp = false;
+            let isCategorical = false;
+            let varNameLabel = '';
+            let unit = '';
+            
+            if (currentMapVar === 'PR') { varNameLabel = 'Precipitação'; unit = 'mm'; }
+            else if (currentMapVar === 'PET') { varNameLabel = 'Evapotranspiração'; unit = 'mm'; }
+            else if (currentMapVar === 'TMED') { varNameLabel = 'Temperatura Média'; unit = '°C'; isTemp = true; }
+            else if (currentMapVar === 'KOPPEN') { varNameLabel = 'Classificação Köppen'; unit = ''; isCategorical = true; }
+            else if (currentMapVar === 'DTA') { varNameLabel = 'Disp. de Água (DTA)'; unit = 'mm/m'; }
+
+            updateMapStatus(`A sintetizar ${varNameLabel} em ${currentMapUf}...`, "bg-blue-100 text-blue-800");
+
+            const mapDataMap = new Map();
+            let uniqueCategories = new Set();
+            let minVal = Infinity, maxVal = -Infinity;
+
+            if (currentMapVar === 'TMED') {
+                // Lógica para Temperatura Média
+                const meses = ["jan","fev","mar","abr","maio","jun","jul","ago","set","out","nov","dez"];
+                mapCsvDataTemp.forEach(row => {
+                    const { kEst, kMun } = getGeographicKeys(row);
+                    if (!kEst || !kMun || row[kEst].trim().toUpperCase() !== currentMapUf.toUpperCase()) return;
+
+                    let sum = 0;
+                    let count = 0;
+                    for (let m of meses) {
+                        const col = `T_${m}`;
+                        const valFloat = parseBrazilianFloat(row[col]);
+                        if (!isNaN(valFloat)) {
+                            sum += valFloat;
+                            count++;
+                        }
+                    }
+                    if (count > 0) {
+                        const mean = sum / count;
+                        const name = normalizeMapString(row[kMun]);
+                        mapDataMap.set(name, mean);
+                        if (mean < minVal) minVal = mean;
+                        if (mean > maxVal) maxVal = mean;
+                    }
+                });
+            } else if (currentMapVar === 'KOPPEN' || currentMapVar === 'DTA') {
+                // Lógica para Köppen ou DTA
+                mapCsvDataBr.forEach(row => {
+                    const { kEst, kMun } = getGeographicKeys(row);
+                    if (!kEst || !kMun || row[kEst].trim().toUpperCase() !== currentMapUf.toUpperCase()) return;
+
+                    const name = normalizeMapString(row[kMun]);
+                    
+                    if (isCategorical) {
+                        // Procura dinâmica pela coluna Köppen
+                        const keyKoppen = Object.keys(row).find(k => k.toLowerCase().includes('ppen') || k.toLowerCase().includes('koppen') || k.toLowerCase().includes('köppen'));
+                        const valRaw = keyKoppen ? row[keyKoppen] : null;
+                        
+                        if (valRaw && valRaw.trim() !== '') {
+                            let valCat = valRaw.trim();
+                            valCat = valCat.charAt(0).toUpperCase() + valCat.slice(1).toLowerCase();
+                            if (valCat === 'Bsh') valCat = 'BSh';
+                            if (valCat === 'Bwh') valCat = 'BWh';
+                            
+                            mapDataMap.set(name, valCat);
+                            uniqueCategories.add(valCat);
+                        }
+                    } else {
+                        // Procura dinâmica pela coluna DTA
+                        const keyDTA = Object.keys(row).find(k => k.toLowerCase().includes('dta'));
+                        const valRaw = keyDTA ? row[keyDTA] : null;
+                        
+                        const valFloat = parseBrazilianFloat(valRaw);
+                        if (!isNaN(valFloat)) {
+                            mapDataMap.set(name, valFloat);
+                            if (valFloat < minVal) minVal = valFloat;
+                            if (valFloat > maxVal) maxVal = valFloat;
+                        }
+                    }
+                });
+            } else {
+                // Lógica para Precipitação ou ETP
+                const prefix = currentMapVar === 'PR' ? 'PR_' : 'PET_';
+                mapCsvDataPR.forEach(row => {
+                    const { kEst, kMun } = getGeographicKeys(row);
+                    if (!kEst || !kMun || row[kEst].trim().toUpperCase() !== currentMapUf.toUpperCase()) return;
+
+                    let sum = 0;
+                    let hasData = false;
+                    for (let i = 1; i <= 12; i++) {
+                        const col = `${prefix}${i.toString().padStart(2, '0')}`;
+                        const valFloat = parseBrazilianFloat(row[col]);
+                        if (!isNaN(valFloat)) {
+                            sum += valFloat;
+                            hasData = true;
+                        }
+                    }
+                    if (hasData) {
+                        const name = normalizeMapString(row[kMun]);
+                        mapDataMap.set(name, sum);
+                        if (sum < minVal) minVal = sum;
+                        if (sum > maxVal) maxVal = sum;
+                    }
+                });
+            }
+
+            // Fallback limits se os dados estiverem vazios numericamente
+            if (!isCategorical && minVal === Infinity) { minVal = 0; maxVal = isTemp ? 40 : 1000; }
+
+            try {
+                updateMapStatus("A procurar Base IBGE...", "bg-yellow-100 text-yellow-800");
+
+                const locUrl = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${currentMapUf}/municipios`;
+                const locData = await fetchSmart(locUrl);
+                
+                const idToName = new Map();
+                const idToOriginalName = new Map();
+                
+                locData.forEach(m => {
+                    const id7 = m.id.toString();
+                    idToName.set(id7, normalizeMapString(m.nome));
+                    idToOriginalName.set(id7, m.nome);
+                });
+
+                const geoUrl = `https://servicodados.ibge.gov.br/api/v3/malhas/estados/${currentMapUf}?formato=application/vnd.geo+json&resolucao=5`;
+                const geoData = await fetchSmart(geoUrl);
+
+                if (geojsonLayer) map.removeLayer(geojsonLayer);
+
+                geojsonLayer = L.geoJson(geoData, {
+                    style: function(feature) {
+                        const codarea = feature.properties.codarea || "";
+                        const mName = idToName.get(codarea) || "";
+                        const valor = mapDataMap.has(mName) ? mapDataMap.get(mName) : null;
+                        
+                        let fillColor = '#dddddd';
+                        if (valor !== null) {
+                            fillColor = isCategorical ? getKoppenColor(valor) : getLinearColormap(valor, minVal, maxVal, isTemp);
+                        }
+
+                        return {
+                            fillColor: fillColor,
+                            color: 'black',
+                            weight: 0.4,
+                            fillOpacity: 0.8,
+                            opacity: 1
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const codarea = feature.properties.codarea || "";
+                        const mName = idToName.get(codarea) || "";
+                        const originalName = idToOriginalName.get(codarea) || "Desconhecido";
+                        const valor = mapDataMap.has(mName) ? mapDataMap.get(mName) : null;
+                        
+                        let displayVal = 'Sem dados';
+                        if (valor !== null) {
+                            displayVal = isCategorical ? valor : valor.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 3}) + (unit ? ' ' + unit : '');
+                        }
+
+                        const tooltipContent = `
+                            <div style="text-align: left;">
+                                <b style="color: #047857;">Município:</b> ${originalName}<br>
+                                <b style="color: #047857;">${varNameLabel}:</b> ${displayVal}
+                            </div>
+                        `;
+                        layer.bindTooltip(tooltipContent, { sticky: true, className: 'custom-tooltip' });
+                    }
+                }).addTo(map);
+
+                map.fitBounds(geojsonLayer.getBounds());
+                updateMapLegend(minVal, maxVal, varNameLabel, unit, isTemp, isCategorical, uniqueCategories);
+                
+                updateMapStatus(`Mapa ${currentMapUf} renderizado com sucesso!`, "bg-green-100 text-green-800");
+                hideLoadingScreen(); // ESCONDE O ECRÃ DE CARREGAMENTO AQUI
+
+            } catch (err) {
+                console.error("Erro fatal map:", err);
+                updateMapStatus("Erro de Acesso na Rede", "bg-red-100 text-red-800");
+                hideLoadingScreen(); // ESCONDE O ECRÃ EM CASO DE ERRO TAMBÉM
+            }
+        }
+
+        function updateMapLegend(min, max, varNameLabel, unit, isTemp, isCategorical, categories) {
+            const legendContainer = document.querySelector('.legend-control');
+            if (legendContainer) legendContainer.remove();
+            
+            const legend = L.control({position: 'topright'});
+            legend.onAdd = function (map) {
+                const div = L.DomUtil.create('div', 'info-map legend-map legend-control');
+                
+                if (isCategorical) {
+                    // Legenda Categórica (Quadrados de Cor + Texto)
+                    let catHtml = '';
+                    Array.from(categories).sort().forEach(cat => {
+                        catHtml += `
+                            <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                                <div style="width: 14px; height: 14px; background: ${getKoppenColor(cat)}; border: 1px solid #333; margin-right: 6px; border-radius: 2px;"></div>
+                                <span>${cat}</span>
+                            </div>
+                        `;
+                    });
+
+                    div.innerHTML = `
+                        <div style="font-weight: bold; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #047857;">${varNameLabel}<br>${currentMapUf}</div>
+                        <div class="legend-labels text-slate-600" style="height: auto;">
+                            ${catHtml}
+                        </div>
+                    `;
+                } else {
+                    // Legenda Numérica (Gradiente)
+                    const gradient = isTemp 
+                        ? "linear-gradient(to bottom, red, orange, yellow, cyan, blue)" 
+                        : "linear-gradient(to bottom, blue, cyan, yellow, orange, red)";
+
+                    div.innerHTML = `
+                        <div style="font-weight: bold; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #047857;">${varNameLabel} (${unit})<br>${currentMapUf}</div>
+                        <div style="display: flex;">
+                            <div class="color-bar" style="background: ${gradient};"></div>
+                            <div class="legend-labels text-slate-600">
+                                <span>${max.toLocaleString('pt-BR', {maximumFractionDigits: 1})}</span>
+                                <span>${((max+min)/2).toLocaleString('pt-BR', {maximumFractionDigits: 1})}</span>
+                                <span>${min.toLocaleString('pt-BR', {maximumFractionDigits: 1})}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                return div;
+            };
+            legend.addTo(map);
+        }
+
+        function updateMapStatus(text, classes) {
+            const badge = document.getElementById('map-status');
+            if(badge){
+                badge.innerText = text;
+                badge.className = `text-xs text-center py-2 px-3 rounded-lg font-bold transition-colors ${classes}`;
+            }
+        }
+
+        // ==========================================
+        // INICIALIZAÇÃO E EVENTOS
+        // ==========================================
+        
+        const stateSelect = document.getElementById('stateSelect');
+        if(stateSelect) {
+            stateSelect.addEventListener('change', (e) => {
+                currentMapUf = e.target.value;
+                processMapData();
+            });
+        }
+
+        const varSelect = document.getElementById('varSelect');
+        if(varSelect) {
+            varSelect.addEventListener('change', (e) => {
+                currentMapVar = e.target.value;
+                processMapData();
+            });
+        }
+
+        window.onload = () => { 
+            initIcons(); 
+            // Iniciar diretamente na vista do mapa
+            switchView('map');
+        };
+    </script>
+</body>
+</html>
