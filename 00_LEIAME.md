@@ -78,7 +78,7 @@ graph TD
 ```
 
 - **Notebooks da disciplina** (`01` a `07` + extra): usam o pacote `agrometeorologiapy` pronto — o foco é aplicar e interpretar os resultados.
-- **`curso/`**: ensina a *construir* essas mesmas fórmulas do zero, capítulo a capítulo, até chegar às mesmas funções da biblioteca — ver seção [🎓 Curso: Agrometeorologia Operacional com Python](#-curso-agrometeorologia-operacional-com-python) abaixo.
+- **`curso/`**: ensina a teoria e as fórmulas de cada tema, capítulo a capítulo, aplicando-as diretamente com a `agrometeorologiapy` — ver seção [🎓 Curso: Agrometeorologia Operacional com Python](#-curso-agrometeorologia-operacional-com-python) abaixo.
 - **Dados brutos** (`.csv`/`.zip`): não precisam ser abertos manualmente, são lidos direto pelos notebooks via URL.
 - **Páginas HTML**: dashboards estáticos (Tailwind/Chart.js/Leaflet) com dados de Santa Helena-PR, independentes dos notebooks.
 
@@ -261,7 +261,7 @@ Baixar dados meteorológicos para Santa Helena - PR.
 
 ## 🎓 Curso: Agrometeorologia Operacional com Python
 
-Pasta [`curso/`](curso/). Enquanto os notebooks acima já chamam o `agrometeorologiapy` pronto, este curso ensina a **construir essas mesmas fórmulas do zero**, começando pelos fundamentos de Python e passando, capítulo a capítulo, pela radiação solar até um modelo de Machine Learning para produtividade — reaproveitando, a cada capítulo, o que foi implementado nos anteriores.
+Pasta [`curso/`](curso/). Assim como os notebooks acima, este curso usa a `agrometeorologiapy` diretamente — a diferença é o ritmo: começando pelos fundamentos de Python e passando, capítulo a capítulo, pela teoria e as fórmulas de cada tema (radiação solar, graus-dia, umidade, evapotranspiração, balanço hídrico, ISNA) até um modelo de Machine Learning para produtividade, sempre explicando a matemática por trás de cada função da biblioteca antes de usá-la. Só entra código próprio quando a biblioteca não cobre algo (ex.: partição de energia, agregação de ISNA por ciclo).
 
 ```mermaid
 graph LR
