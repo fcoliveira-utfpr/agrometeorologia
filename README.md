@@ -43,7 +43,7 @@ graph TD
 
     subgraph CURSO["🎓 curso/ — Agrometeorologia Operacional"]
         direction LR
-        C1["1 Ambiente"] --> C2["2 Radiação"] --> C3["3 Graus-dia"] --> C4["4 Umidade"] --> C5["5 ETo"] --> C6["6 Bal. hídrico"] --> C7["7 ISNA"] --> C8["8 Machine Learning"]
+        C0["0 Primeiros passos em Python"] --> C1["1 Ambiente"] --> C2["2 Radiação"] --> C3["3 Graus-dia"] --> C4["4 Umidade"] --> C5["5 ETo"] --> C6["6 Bal. hídrico"] --> C7["7 ISNA"] --> C8["8 Machine Learning"]
     end
 
     subgraph DADOS["📊 Dados brutos"]
@@ -261,11 +261,12 @@ Baixar dados meteorológicos para Santa Helena - PR.
 
 ## 🎓 Curso: Agrometeorologia Operacional com Python
 
-Pasta [`curso/`](curso/). Enquanto os notebooks acima já chamam o `agrometeorologiapy` pronto, este curso ensina a **construir essas mesmas fórmulas do zero**, capítulo a capítulo — da radiação solar até um modelo de Machine Learning para produtividade — reaproveitando, a cada capítulo, o que foi implementado nos anteriores.
+Pasta [`curso/`](curso/). Enquanto os notebooks acima já chamam o `agrometeorologiapy` pronto, este curso ensina a **construir essas mesmas fórmulas do zero**, começando pelos fundamentos de Python e passando, capítulo a capítulo, pela radiação solar até um modelo de Machine Learning para produtividade — reaproveitando, a cada capítulo, o que foi implementado nos anteriores.
 
 ```mermaid
 graph LR
-    C1["Cap. 1<br/>Ambiente e dados"] --> C2["Cap. 2<br/>Radiação solar"]
+    C0["Cap. 0<br/>Primeiros passos em Python"] --> C1["Cap. 1<br/>Ambiente e dados"]
+    C1 --> C2["Cap. 2<br/>Radiação solar"]
     C1 --> C3["Cap. 3<br/>Graus-dia"]
     C1 --> C4["Cap. 4<br/>Umidade e energia"]
     C2 --> C5["Cap. 5<br/>Evapotranspiração (ETo)"]
@@ -278,7 +279,8 @@ graph LR
 
 | Cap. | Notebook | Tema | Pré-requisito |
 |---|---|---|---|
-| 1 | [`01_ambiente_e_dados.ipynb`](curso/01_ambiente_e_dados.ipynb) | Ambiente de trabalho, notebooks e primeiros dados | — |
+| 0 | [`00_primeiros_passos_python_agro.ipynb`](curso/00_primeiros_passos_python_agro.ipynb) | Primeiros passos em Python: tipos de dados, operadores, listas/dicionários/DataFrames, lógica condicional e um primeiro uso do `agrometeorologiapy` | — |
+| 1 | [`01_ambiente_e_dados.ipynb`](curso/01_ambiente_e_dados.ipynb) | Ambiente de trabalho, notebooks e primeiros dados | Cap. 0 |
 | 2 | [`02_radiacao_solar.ipynb`](curso/02_radiacao_solar.ipynb) | Radiação solar e fotoperíodo | Cap. 1 |
 | 3 | [`03_temperatura_graus_dia.ipynb`](curso/03_temperatura_graus_dia.ipynb) | Temperatura, graus-dia e fenologia | Cap. 1, 2 |
 | 4 | [`04_umidade_energia.ipynb`](curso/04_umidade_energia.ipynb) | Umidade do ar e balanço de energia | Cap. 1-3 |
