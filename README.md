@@ -189,7 +189,7 @@ Páginas HTML estáticas (Tailwind, Chart.js e Leaflet) publicadas via GitHub Pa
 
 | Página | Conteúdo |
 |---|---|
-| [Início](https://fcoliveira-utfpr.github.io/agrometeorologia/) ([`index.html`](index.html), versão alternativa em [`index_2.html`](index_2.html)) | Portal GAMBITEC Data |
+| [Início](https://fcoliveira-utfpr.github.io/agrometeorologia/) ([`index.html`](index.html) | Portal GAMBITEC Data |
 | [NASA/POWER](https://fcoliveira-utfpr.github.io/agrometeorologia/nasapower.html) | Consulta e gráficos de dados NASA/POWER por município |
 | [Previsão 10 dias](https://fcoliveira-utfpr.github.io/agrometeorologia/previsao.html) | Previsão diária para qualquer cidade (Open-Meteo) |
 | [Últimos 7 dias](https://fcoliveira-utfpr.github.io/agrometeorologia/setedias.html) | Série horária dos últimos 7 dias e do dia atual (Open-Meteo) |
